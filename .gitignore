@@ -1,0 +1,25 @@
+# Dependencias y salidas de build
+node_modules/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Datos locales: almacenamiento fs, correos de prueba, logs del smoke
+.data/
+
+# Entorno: nunca se commitea un .env con valores; la plantilla sí
+.env
+.env.*
+!.env.example
+
+# Playwright
+playwright-report/
+test-results/
+blob-report/
+
+# Sistema
+.DS_Store
+npm-debug.log*
+pnpm-debug.log*

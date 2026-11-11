@@ -1,0 +1,1941 @@
+{
+ "ban_vinc": [
+  {
+   "f": "Ciudad_Fecha_diligenciamiento",
+   "k": "t",
+   "key": "ciudad"
+  },
+  {
+   "f": "Oficina_Fecha_diligenciamiento",
+   "k": "t",
+   "key": "oficina"
+  },
+  {
+   "f": "Día_Fecha_diligenciamiento",
+   "k": "d",
+   "key": "fecha_dilig",
+   "part": "d"
+  },
+  {
+   "f": "Mes_Fecha_diligenciamiento",
+   "k": "d",
+   "key": "fecha_dilig",
+   "part": "m"
+  },
+  {
+   "f": "Año_Fecha_diligenciamiento",
+   "k": "d",
+   "key": "fecha_dilig",
+   "part": "y"
+  },
+  {
+   "f": "Documento_Cedula_Datos_Personales",
+   "k": "c",
+   "key": "tipo_doc",
+   "val": "CC"
+  },
+  {
+   "f": "Documento_CedulaExtranjer_Datos_Personales",
+   "k": "c",
+   "key": "tipo_doc",
+   "val": "CE"
+  },
+  {
+   "f": "Documento_TarIdentidad_Datos_Personales",
+   "k": "c",
+   "key": "tipo_doc",
+   "val": "TI"
+  },
+  {
+   "f": "Documento_Pasaporte_Datos_Personales",
+   "k": "c",
+   "key": "tipo_doc",
+   "val": "PAS"
+  },
+  {
+   "f": "Documento_NUIP_Datos_Personales",
+   "k": "c",
+   "key": "tipo_doc",
+   "val": "NUIP"
+  },
+  {
+   "f": "No de Identificación_Datos_personales",
+   "k": "t",
+   "key": "num_doc"
+  },
+  {
+   "f": "Fecha Expedición Día_Datos_personales",
+   "k": "d",
+   "key": "exp_fecha",
+   "part": "d"
+  },
+  {
+   "f": "Fecha Expedición Mes_Datos_personales",
+   "k": "d",
+   "key": "exp_fecha",
+   "part": "m"
+  },
+  {
+   "f": "Fecha Expedición Año_Datos_personales",
+   "k": "d",
+   "key": "exp_fecha",
+   "part": "y"
+  },
+  {
+   "f": "Lugar de Expedición_Datos_personales",
+   "k": "t",
+   "key": "exp_lugar"
+  },
+  {
+   "f": "Primer Nombre_Datos_personales",
+   "k": "t",
+   "key": "nombre1"
+  },
+  {
+   "f": "Segundo Nombre_Datos_personales",
+   "k": "t",
+   "key": "nombre2"
+  },
+  {
+   "f": "Primer Apellido_Datos_personales",
+   "k": "t",
+   "key": "apellido1"
+  },
+  {
+   "f": "Segundo Apellido_Datos_personales",
+   "k": "t",
+   "key": "apellido2"
+  },
+  {
+   "f": "Femenino_Datos_personales",
+   "k": "c",
+   "key": "sexo",
+   "val": "F"
+  },
+  {
+   "f": "Masculino_Datos_personales",
+   "k": "c",
+   "key": "sexo",
+   "val": "M"
+  },
+  {
+   "f": "Fecha Nacimiento Día_Datos_personales",
+   "k": "d",
+   "key": "nac_fecha",
+   "part": "d"
+  },
+  {
+   "f": "Fecha Nacimiento Mes_Datos_personales",
+   "k": "d",
+   "key": "nac_fecha",
+   "part": "m"
+  },
+  {
+   "f": "Fecha Nacimiento Año_Datos_personales",
+   "k": "d",
+   "key": "nac_fecha",
+   "part": "y"
+  },
+  {
+   "f": "País/Ciudad/Departamento Nacimiento_Datos_personales",
+   "k": "t",
+   "key": "lugar_nac"
+  },
+  {
+   "f": "Colombiano_Datos_personales",
+   "k": "c",
+   "key": "nacionalidad",
+   "val": "Colombiana"
+  },
+  {
+   "f": "Correo Electrónico_Datos_personales",
+   "k": "t",
+   "key": "email"
+  },
+  {
+   "f": "Celular Personal_Datos_personales",
+   "k": "t",
+   "key": "celular"
+  },
+  {
+   "f": "Teléfono Residencia_Datos_personales",
+   "k": "t",
+   "key": "tel_fijo"
+  },
+  {
+   "f": "Dirección Residencia_Datos_personales",
+   "k": "t",
+   "key": "direccion"
+  },
+  {
+   "f": "Barrio_Datos_personales",
+   "k": "t",
+   "key": "barrio"
+  },
+  {
+   "f": "CiudadMunicipioDepartamento_Datos_personales",
+   "k": "t",
+   "key": "ciudad_depto_res"
+  },
+  {
+   "f": "País_Datos_personales",
+   "k": "t",
+   "key": "pais_res"
+  },
+  {
+   "f": "Soltero_Datos_personales",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "soltero"
+  },
+  {
+   "f": "Casado_Datos_personales",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "casado"
+  },
+  {
+   "f": "Union_Libre_Datos_personales",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "union"
+  },
+  {
+   "f": "Viudo_Datos_personales",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "viudo"
+  },
+  {
+   "f": "Divorciado_Datos_personales",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "divorciado"
+  },
+  {
+   "f": "Personas a cargo_Datos_personales",
+   "k": "t",
+   "key": "personas_cargo"
+  },
+  {
+   "f": "Nivel Educación Ninguno_Datos_personales",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "ninguno"
+  },
+  {
+   "f": "Nivel Educación Primaria_Datos_personales",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "primaria"
+  },
+  {
+   "f": "Nivel Educación Secundaria_Datos_personales",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "bachillerato"
+  },
+  {
+   "f": "Nivel Educación Otro_Datos_personales",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "tecnico"
+  },
+  {
+   "f": "Nivel Educación Tecnológico_Datos_personales",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "tecnologo"
+  },
+  {
+   "f": "Nivel Educación Profesional_Datos_personales",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "universitario"
+  },
+  {
+   "f": "Nivel Educación Posgrado_Datos_personales",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "posgrado"
+  },
+  {
+   "f": "Profesión y/u Ocupación_Datos_personales",
+   "k": "t",
+   "key": "profesion"
+  },
+  {
+   "f": "Empleado_Activ_Econo",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "empleado"
+  },
+  {
+   "f": "Asalariado_Informacion_laboral",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "empleado"
+  },
+  {
+   "f": "Independiente_Activ_Econo",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "independiente"
+  },
+  {
+   "f": "Independiente_Informacion_laboral",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "independiente"
+  },
+  {
+   "f": "PenJubilado_Activ_Econo",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "pensionado"
+  },
+  {
+   "f": "Pensionado_Informacion_laboral",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "pensionado"
+  },
+  {
+   "f": "Ocupación/Oficio Ama de Casa_Actividad_económica",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "hogar"
+  },
+  {
+   "f": "Actividad Económica Ama de Casa_Información_laboral",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "hogar"
+  },
+  {
+   "f": "Ocupación/Oficio Estudiante_Actividad_económica",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "estudiante"
+  },
+  {
+   "f": "Ocupación/Oficio Rentista Capital_Actividad_económica",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "rentista"
+  },
+  {
+   "f": "Actividad Económica Rentista Capital_Información_laboral",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "rentista"
+  },
+  {
+   "f": "Ocupación/Oficio Desempleado Sin Ingresos_Actividad_económica",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "desempleado"
+  },
+  {
+   "f": "Nombre y sigla del empleador o de la empresa_Información_laboral",
+   "k": "t",
+   "key": "empresa"
+  },
+  {
+   "f": "Cargo Actual_Información_laboral",
+   "k": "t",
+   "key": "cargo"
+  },
+  {
+   "f": "TipodeContrato_Informacion_laboral",
+   "k": "t",
+   "key": "contrato_txt"
+  },
+  {
+   "f": "Fecha de Ingreso Labral Día_Información_laboral",
+   "k": "d",
+   "key": "fecha_ingreso",
+   "part": "d"
+  },
+  {
+   "f": "Fecha de Ingreso Labral Mes_Información_laboral",
+   "k": "d",
+   "key": "fecha_ingreso",
+   "part": "m"
+  },
+  {
+   "f": "Fecha de Ingreso Labral Año_Información_laboral",
+   "k": "d",
+   "key": "fecha_ingreso",
+   "part": "y"
+  },
+  {
+   "f": "Dirección Empresa_Información_laboral",
+   "k": "t",
+   "key": "dir_trab"
+  },
+  {
+   "f": "Ciudad/Municipio y Departamento_Información_laboral",
+   "k": "t",
+   "key": "ciudad_depto_trab"
+  },
+  {
+   "f": "País_Información_laboral",
+   "k": "t",
+   "key": "pais_trab"
+  },
+  {
+   "f": "Teléfono_Información_laboral",
+   "k": "t",
+   "key": "tel_trab"
+  },
+  {
+   "f": "Sector Actividad Económica Codigo CIIU_Actividad_económica",
+   "k": "t",
+   "key": "ciiu"
+  },
+  {
+   "f": "Valor Ingresos Mensuales_Información_financiera",
+   "k": "t",
+   "key": "ingresos",
+   "fmt": "money"
+  },
+  {
+   "f": "Valor Otros Ingresos Mensuales_Información_financiera",
+   "k": "t",
+   "key": "otros_ingresos",
+   "fmt": "money"
+  },
+  {
+   "f": "Detalle otros Ingresos Mensuales que percibe_Información_financiera",
+   "k": "t",
+   "key": "desc_otros"
+  },
+  {
+   "f": "Valor Total Ingresos Mensuales + Otros Ingresos_Información_financiera",
+   "k": "t",
+   "key": "total_ingresos",
+   "fmt": "money"
+  },
+  {
+   "f": "Egresos_Info_financiera",
+   "k": "t",
+   "key": "egresos",
+   "fmt": "money"
+  },
+  {
+   "f": "Valor Total Activos_Información_financiera",
+   "k": "t",
+   "key": "activos",
+   "fmt": "money"
+  },
+  {
+   "f": "Valor Total Pasivos_Información_financiera",
+   "k": "t",
+   "key": "pasivos",
+   "fmt": "money"
+  },
+  {
+   "f": "Valor Total Patrimonio_Información_financiera",
+   "k": "t",
+   "key": "patrimonio",
+   "fmt": "money"
+  },
+  {
+   "f": "EsDeclarante",
+   "k": "c",
+   "key": "declara_renta",
+   "val": "si"
+  },
+  {
+   "f": "NoEsDeclarante",
+   "k": "c",
+   "key": "declara_renta",
+   "val": "no"
+  }
+ ],
+ "ban_orden": [
+  {
+   "f": "CIUDAD",
+   "k": "t",
+   "key": "ciudad"
+  },
+  {
+   "f": "Fecha Diligenciamiento Día_Información_general",
+   "k": "d",
+   "key": "fecha_dilig",
+   "part": "d"
+  },
+  {
+   "f": "Fecha Diligenciamiento Mes_Información_general",
+   "k": "d",
+   "key": "fecha_dilig",
+   "part": "m"
+  },
+  {
+   "f": "Fecha Diligenciamiento Año_Información_general",
+   "k": "d",
+   "key": "fecha_dilig",
+   "part": "y"
+  },
+  {
+   "f": "Fecha de Apertura Día_Información_general",
+   "k": "d",
+   "key": "fecha_apertura",
+   "part": "d"
+  },
+  {
+   "f": "Fecha de Apertura Mes_Información_general",
+   "k": "d",
+   "key": "fecha_apertura",
+   "part": "m"
+  },
+  {
+   "f": "Fecha de Apertura Año_Información_general",
+   "k": "d",
+   "key": "fecha_apertura",
+   "part": "y"
+  },
+  {
+   "f": "Fecha de Vencimiento Día_Información_general",
+   "k": "d",
+   "key": "fecha_venc",
+   "part": "d"
+  },
+  {
+   "f": "Fecha de Vencimiento Mes_Información_general",
+   "k": "d",
+   "key": "fecha_venc",
+   "part": "m"
+  },
+  {
+   "f": "Fecha de Vencimiento Año_Información_general",
+   "k": "d",
+   "key": "fecha_venc",
+   "part": "y"
+  },
+  {
+   "f": "PlazoEnDias_Informacion_General",
+   "k": "t",
+   "key": "plazo_dias"
+  },
+  {
+   "f": "ValorInversion_Informacion_General",
+   "k": "t",
+   "key": "valor",
+   "fmt": "money"
+  },
+  {
+   "f": "Valor en letras_Información_general",
+   "k": "t",
+   "key": "valor_letras"
+  },
+  {
+   "f": "TipoInversiónNueva_Informacion_general",
+   "k": "x"
+  },
+  {
+   "f": "CDT_Desmaterializado_Informacion_general",
+   "k": "c",
+   "key": "tipo_cdt",
+   "val": "desmaterializado"
+  },
+  {
+   "f": "Tipo CDT Fisico_Información_general",
+   "k": "c",
+   "key": "tipo_cdt",
+   "val": "fisico"
+  },
+  {
+   "f": "Tasa_Anual_Informacion_General",
+   "k": "t",
+   "key": "tasa_ea"
+  },
+  {
+   "f": "Tasa_Efectiva_Informacion_general",
+   "k": "x"
+  },
+  {
+   "f": "Frecuencia Pago Intereses Mensual_Información_general",
+   "k": "c",
+   "key": "periodicidad",
+   "val": "mensual"
+  },
+  {
+   "f": "Frecuencia Pago Intereses Bimensual_Información_general",
+   "k": "c",
+   "key": "periodicidad",
+   "val": "bimestral"
+  },
+  {
+   "f": "Frecuencia Pago Intereses Trimentral_Información_general",
+   "k": "c",
+   "key": "periodicidad",
+   "val": "trimestral"
+  },
+  {
+   "f": "Frecuencia Pago Intereses Semestral_Información_general",
+   "k": "c",
+   "key": "periodicidad",
+   "val": "semestral"
+  },
+  {
+   "f": "Frecuencia Pago Intereses Anual_Información_general",
+   "k": "c",
+   "key": "periodicidad",
+   "val": "anual"
+  },
+  {
+   "f": "Pago_Vencimiento_Información_general",
+   "k": "c",
+   "key": "periodicidad",
+   "val": "vencimiento"
+  },
+  {
+   "f": "Forma Pago Apertura Consignación Efectivo o Transferencia_Información_general",
+   "k": "c",
+   "key": "forma_pago",
+   "val": "transferencia"
+  },
+  {
+   "f": "Forma Pago Apertura Consignación Efectivo o Transferencia_Información_general",
+   "k": "c",
+   "key": "forma_pago",
+   "val": "efectivo"
+  },
+  {
+   "f": "Forma Pago Apertura Debito Cuenta BANCIEN SA_Información_general",
+   "k": "c",
+   "key": "forma_pago",
+   "val": "debito"
+  },
+  {
+   "f": "Forma Pago Apertura Consignación Cheque 1_Información_general",
+   "k": "c",
+   "key": "forma_pago",
+   "val": "cheque"
+  },
+  {
+   "f": "TipoIdentificacionTitular1",
+   "k": "t",
+   "key": "tipo_doc"
+  },
+  {
+   "f": "NoDeIdentificacionTitular1",
+   "k": "t",
+   "key": "num_doc"
+  },
+  {
+   "f": "NombresyApellidosTitular1",
+   "k": "t",
+   "key": "nombre_completo"
+  }
+ ],
+ "colte_cdt": [
+  {
+   "f": "Ciudad_Principal",
+   "k": "t",
+   "key": "ciudad"
+  },
+  {
+   "f": "Agencia_Principal",
+   "k": "t",
+   "key": "oficina"
+  },
+  {
+   "f": "Fecha",
+   "k": "d",
+   "key": "fecha_dilig",
+   "part": "dmy"
+  },
+  {
+   "f": "Fecha Emisión_Principal",
+   "k": "d",
+   "key": "fecha_apertura",
+   "part": "dmy"
+  },
+  {
+   "f": "Fecha Vencimiento_Principal",
+   "k": "d",
+   "key": "fecha_venc",
+   "part": "dmy"
+  },
+  {
+   "f": "Plazo_Principal",
+   "k": "t",
+   "key": "plazo_txt"
+  },
+  {
+   "f": "Tasa E A_Principal",
+   "k": "t",
+   "key": "tasa_ea"
+  },
+  {
+   "f": "Valor_Principal",
+   "k": "t",
+   "key": "valor",
+   "fmt": "money"
+  },
+  {
+   "f": "Valor en letras_Principal",
+   "k": "t",
+   "key": "valor_letras"
+  },
+  {
+   "f": "Nuevo_Principal",
+   "k": "s",
+   "val": "X"
+  },
+  {
+   "f": "Desmaterializado_Principal",
+   "k": "c",
+   "key": "tipo_cdt",
+   "val": "desmaterializado"
+  },
+  {
+   "f": "Físico_Principal",
+   "k": "c",
+   "key": "tipo_cdt",
+   "val": "fisico"
+  },
+  {
+   "f": "Periodicidad_Principal",
+   "k": "t",
+   "key": "periodicidad_txt"
+  },
+  {
+   "f": "Titular_1_Titulares",
+   "k": "t",
+   "key": "nombre_completo"
+  },
+  {
+   "f": "ID1_Titulares",
+   "k": "t",
+   "key": "tipo_doc"
+  },
+  {
+   "f": "No ID1_Titulares",
+   "k": "t",
+   "key": "num_doc"
+  },
+  {
+   "f": "NOMBRE CLIENTE",
+   "k": "t",
+   "key": "nombre_completo"
+  },
+  {
+   "f": "CC  NIT",
+   "k": "t",
+   "key": "num_doc"
+  },
+  {
+   "f": "Valor CDT_Pago_Inversión",
+   "k": "t",
+   "key": "valor",
+   "fmt": "money"
+  },
+  {
+   "f": "Gran Total_Pago_Inversión",
+   "k": "t",
+   "key": "valor",
+   "fmt": "money"
+  },
+  {
+   "f": "Transfer Cta Convenio_Pago_Inversión",
+   "k": "tv",
+   "key": "valor",
+   "fmt": "money",
+   "cond": [
+    "forma_pago",
+    "transferencia"
+   ]
+  },
+  {
+   "f": "Efectivo_Pago_Inversión",
+   "k": "tv",
+   "key": "valor",
+   "fmt": "money",
+   "cond": [
+    "forma_pago",
+    "efectivo"
+   ]
+  },
+  {
+   "f": "DB Cta_Pago_Inversión",
+   "k": "tv",
+   "key": "valor",
+   "fmt": "money",
+   "cond": [
+    "forma_pago",
+    "debito"
+   ]
+  }
+ ],
+ "colte_vinc": [
+  {
+   "f": "CIUDAD Gen_Info",
+   "k": "t",
+   "key": "ciudad"
+  },
+  {
+   "f": "CÓDIGO AGENCIA Gen_Info",
+   "k": "t",
+   "key": "oficina"
+  },
+  {
+   "f": "DD Gen_Info",
+   "k": "d",
+   "key": "fecha_dilig",
+   "part": "d"
+  },
+  {
+   "f": "MM Gen_Info",
+   "k": "d",
+   "key": "fecha_dilig",
+   "part": "m"
+  },
+  {
+   "f": "YYYY Gen_Info",
+   "k": "d",
+   "key": "fecha_dilig",
+   "part": "y"
+  },
+  {
+   "f": "Cedula_General_Info",
+   "k": "c",
+   "key": "tipo_doc",
+   "val": "CC"
+  },
+  {
+   "f": "Cedula_Extranjer_General_Info",
+   "k": "c",
+   "key": "tipo_doc",
+   "val": "CE"
+  },
+  {
+   "f": "T_Identidad_General_Info",
+   "k": "c",
+   "key": "tipo_doc",
+   "val": "TI"
+  },
+  {
+   "f": "Pasaporte_Gen_Info",
+   "k": "c",
+   "key": "tipo_doc",
+   "val": "PAS"
+  },
+  {
+   "f": "N documento Gen_Info",
+   "k": "t",
+   "key": "num_doc"
+  },
+  {
+   "f": "DD Exp_Documento Gen_Info",
+   "k": "d",
+   "key": "exp_fecha",
+   "part": "d"
+  },
+  {
+   "f": "MM Exp_Documento Gen_Info",
+   "k": "d",
+   "key": "exp_fecha",
+   "part": "m"
+  },
+  {
+   "f": "YYYY Exp_Documento Gen_Info",
+   "k": "d",
+   "key": "exp_fecha",
+   "part": "y"
+  },
+  {
+   "f": "CiudadMunicipio de expedición del documento de identidad Gen_Info",
+   "k": "t",
+   "key": "exp_lugar"
+  },
+  {
+   "f": "Primer nombre Gen_Info",
+   "k": "t",
+   "key": "nombre1"
+  },
+  {
+   "f": "Segundo nombre Gen_Info",
+   "k": "t",
+   "key": "nombre2"
+  },
+  {
+   "f": "Primer apellido Gen_Info",
+   "k": "t",
+   "key": "apellido1"
+  },
+  {
+   "f": "Segundo apellido Gen_Info",
+   "k": "t",
+   "key": "apellido2"
+  },
+  {
+   "f": "Femenino_General_Info",
+   "k": "c",
+   "key": "sexo",
+   "val": "F"
+  },
+  {
+   "f": "Masculino_General_Info",
+   "k": "c",
+   "key": "sexo",
+   "val": "M"
+  },
+  {
+   "f": "DD Nacimiento Gen_Info",
+   "k": "d",
+   "key": "nac_fecha",
+   "part": "d"
+  },
+  {
+   "f": "MM Nacimiento Gen_Info",
+   "k": "d",
+   "key": "nac_fecha",
+   "part": "m"
+  },
+  {
+   "f": "YYYY Nacimiento Gen_Info",
+   "k": "d",
+   "key": "nac_fecha",
+   "part": "y"
+  },
+  {
+   "f": "País de nacimiento Gen_Info",
+   "k": "t",
+   "key": "nac_pais"
+  },
+  {
+   "f": "CiudadMunicipio de nacimiento Gen_Info",
+   "k": "t",
+   "key": "nac_ciudad"
+  },
+  {
+   "f": "Email personal Gen_Info",
+   "k": "t",
+   "key": "email"
+  },
+  {
+   "f": "Celular Gen_Info",
+   "k": "t",
+   "key": "celular"
+  },
+  {
+   "f": "Teléfono residencia Gen_Info",
+   "k": "t",
+   "key": "tel_fijo"
+  },
+  {
+   "f": "Dirección de residencia Gen_Info",
+   "k": "t",
+   "key": "direccion"
+  },
+  {
+   "f": "Barrio Gen_Info",
+   "k": "t",
+   "key": "barrio"
+  },
+  {
+   "f": "Ciudad Municipio Gen_Info",
+   "k": "t",
+   "key": "ciudad_res"
+  },
+  {
+   "f": "Departamento Gen_Info",
+   "k": "t",
+   "key": "depto_res"
+  },
+  {
+   "f": "País Gen_Info",
+   "k": "t",
+   "key": "pais_res"
+  },
+  {
+   "f": "Estrato_Gen_Info",
+   "k": "t",
+   "key": "estrato"
+  },
+  {
+   "f": "Soltero_General_Info",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "soltero"
+  },
+  {
+   "f": "Casado_General_Info",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "casado"
+  },
+  {
+   "f": "Union_libre_General_Info",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "union"
+  },
+  {
+   "f": "Viudo_General_Info",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "viudo"
+  },
+  {
+   "f": "Divorciado_General_Info",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "divorciado"
+  },
+  {
+   "f": "N personas a cargo Gen_Info",
+   "k": "t",
+   "key": "personas_cargo"
+  },
+  {
+   "f": "Propia_Gen_Info",
+   "k": "c",
+   "key": "tipo_vivienda",
+   "val": "propia"
+  },
+  {
+   "f": "Arrendada Gen_Info",
+   "k": "c",
+   "key": "tipo_vivienda",
+   "val": "arrendada"
+  },
+  {
+   "f": "Familiar Gen_Info",
+   "k": "c",
+   "key": "tipo_vivienda",
+   "val": "familiar"
+  },
+  {
+   "f": "Empleado_Activ_Econo",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "empleado"
+  },
+  {
+   "f": "Independiente_Activ_Econo",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "independiente"
+  },
+  {
+   "f": "PenJubilado_Activ_Econo",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "pensionado"
+  },
+  {
+   "f": "Amadecasa_Activ_Econo",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "hogar"
+  },
+  {
+   "f": "Estudiante_Activ_Econo",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "estudiante"
+  },
+  {
+   "f": "Rentistadecapital_Activ_Econo",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "rentista"
+  },
+  {
+   "f": "Desempleado_Activ_Econo",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "desempleado"
+  },
+  {
+   "f": "Nombre de la empresa Establecimiento Activ_Econo",
+   "k": "t",
+   "key": "empresa"
+  },
+  {
+   "f": "Cargo actual Activ_Econo",
+   "k": "t",
+   "key": "cargo"
+  },
+  {
+   "f": "Contrato_Indefinido_Activ_Econo",
+   "k": "c",
+   "key": "contrato",
+   "val": "indefinido"
+  },
+  {
+   "f": "Contrato_Fijo_Activ_Econo",
+   "k": "c",
+   "key": "contrato",
+   "val": "fijo"
+  },
+  {
+   "f": "DD Ingreso Activ_Econo",
+   "k": "d",
+   "key": "fecha_ingreso",
+   "part": "d"
+  },
+  {
+   "f": "MM Ingreso Activ_Econo",
+   "k": "d",
+   "key": "fecha_ingreso",
+   "part": "m"
+  },
+  {
+   "f": "YYYY Ingreso Activ_Econo",
+   "k": "d",
+   "key": "fecha_ingreso",
+   "part": "y"
+  },
+  {
+   "f": "Dirección Activ_Econo",
+   "k": "t",
+   "key": "dir_trab"
+  },
+  {
+   "f": "Ciudad Municipio Activ_Econo",
+   "k": "t",
+   "key": "ciudad_trab"
+  },
+  {
+   "f": "Departamento Activ_Econo",
+   "k": "t",
+   "key": "depto_trab"
+  },
+  {
+   "f": "Teléfono Activ_Econo",
+   "k": "t",
+   "key": "tel_trab"
+  },
+  {
+   "f": "Código CIIU Activ_Econo",
+   "k": "t",
+   "key": "ciiu"
+  },
+  {
+   "f": "Salario Actual Activ_Econo",
+   "k": "t",
+   "key": "ingresos",
+   "fmt": "money"
+  },
+  {
+   "f": "Salario/ingresos Info_financiera",
+   "k": "t",
+   "key": "ingresos",
+   "fmt": "money"
+  },
+  {
+   "f": "Otros ingresos Info_financiera",
+   "k": "t",
+   "key": "otros_ingresos",
+   "fmt": "money"
+  },
+  {
+   "f": "Detalle Otros Ingresos Info_financiera",
+   "k": "t",
+   "key": "desc_otros"
+  },
+  {
+   "f": "Total ingresos Info_financiera",
+   "k": "t",
+   "key": "total_ingresos",
+   "fmt": "money"
+  },
+  {
+   "f": "Total Egresos Info_financiera",
+   "k": "t",
+   "key": "egresos",
+   "fmt": "money"
+  },
+  {
+   "f": "Total Activos Info_financiera",
+   "k": "t",
+   "key": "activos",
+   "fmt": "money"
+  },
+  {
+   "f": "Total Pasivos Info_financiera",
+   "k": "t",
+   "key": "pasivos",
+   "fmt": "money"
+  },
+  {
+   "f": "Esdeclarante_Info_financiera",
+   "k": "c",
+   "key": "declara_renta",
+   "val": "si"
+  },
+  {
+   "f": "NoEsdeclarante_Info_financiera",
+   "k": "c",
+   "key": "declara_renta",
+   "val": "no"
+  }
+ ],
+ "juris": [
+  {
+   "f": "CDT",
+   "k": "x"
+  },
+  {
+   "f": "SolicitudParaCooperativaJuriscoop_Informacion_basica",
+   "k": "x"
+  },
+  {
+   "f": "Tipo Solicitante Titular_Información_básica",
+   "k": "x"
+  },
+  {
+   "f": "Fecha_Diligenciamiento",
+   "k": "d",
+   "key": "fecha_dilig",
+   "part": "dmy"
+  },
+  {
+   "f": "Plazo_Meses_Apertura_Ahorro_inversión",
+   "k": "t",
+   "key": "plazo_meses"
+  },
+  {
+   "f": "ValorCuotaApertura_Ahorro_inversion",
+   "k": "t",
+   "key": "valor",
+   "fmt": "money"
+  },
+  {
+   "f": "Tipo_Cedula_Informacion_basica",
+   "k": "c",
+   "key": "tipo_doc",
+   "val": "CC"
+  },
+  {
+   "f": "Tipo_Cedula_Extranjer_Informacion_basica",
+   "k": "c",
+   "key": "tipo_doc",
+   "val": "CE"
+  },
+  {
+   "f": "Tipo_Tarjeta_Identid_Informacion_basica",
+   "k": "c",
+   "key": "tipo_doc",
+   "val": "TI"
+  },
+  {
+   "f": "Tipo_NUIP_Informacion_basica",
+   "k": "c",
+   "key": "tipo_doc",
+   "val": "NUIP"
+  },
+  {
+   "f": "Nro Documento_Información_básica",
+   "k": "t",
+   "key": "num_doc"
+  },
+  {
+   "f": "PaisDeNacimiento_Informacion_basica",
+   "k": "t",
+   "key": "nac_pais"
+  },
+  {
+   "f": "Correo Electrónico_Información_básica",
+   "k": "t",
+   "key": "email"
+  },
+  {
+   "f": "Telefono Celular_Información_básica",
+   "k": "t",
+   "key": "celular"
+  },
+  {
+   "f": "Telefono Residencia_Informacion_básica",
+   "k": "t",
+   "key": "tel_fijo"
+  },
+  {
+   "f": "Dirección Residencia_Información_básica",
+   "k": "t",
+   "key": "direccion"
+  },
+  {
+   "f": "Ciudad y Departamento Residencia_Información_básica",
+   "k": "t",
+   "key": "ciudad_depto_res"
+  },
+  {
+   "f": "Soltero_Informacion_basica",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "soltero"
+  },
+  {
+   "f": "Casado_Informacion_basica",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "casado"
+  },
+  {
+   "f": "Union_Libre_Informacion_basica",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "union"
+  },
+  {
+   "f": "Viudo_Informacion_basica",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "viudo"
+  },
+  {
+   "f": "Divorciado_Informacion_basica",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "divorciado"
+  },
+  {
+   "f": "Separado_Informacion_basica",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "separado"
+  },
+  {
+   "f": "Personas a Cargo_Información_básica",
+   "k": "t",
+   "key": "personas_cargo"
+  },
+  {
+   "f": "Nivel Educativo Ninguno_Información_básica",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "ninguno"
+  },
+  {
+   "f": "Nivel Educativo Primaria_Información_básica",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "primaria"
+  },
+  {
+   "f": "Nivel Educativo Bachillerato_Información_básica",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "bachillerato"
+  },
+  {
+   "f": "Nivel Educativo Técnico_Información_básica",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "tecnico"
+  },
+  {
+   "f": "Nivel Educativo Tecnológico_Información_básica",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "tecnologo"
+  },
+  {
+   "f": "Nivel Educativo Universitario_Información_básica",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "universitario"
+  },
+  {
+   "f": "Nivel Educativo Especialización_Información_básica",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "posgrado"
+  },
+  {
+   "f": "Vivienda_Propia_Informacion_basica",
+   "k": "c",
+   "key": "tipo_vivienda",
+   "val": "propia"
+  },
+  {
+   "f": "Tipo de Vivienda Arrendada_Información_básica",
+   "k": "c",
+   "key": "tipo_vivienda",
+   "val": "arrendada"
+  },
+  {
+   "f": "Tipo de Vivienda Familiar_Información_básica",
+   "k": "c",
+   "key": "tipo_vivienda",
+   "val": "familiar"
+  },
+  {
+   "f": "EmpleadoPriv_Activ_Econo",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "empleado"
+  },
+  {
+   "f": "Independiente_Activ_Econo",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "independiente"
+  },
+  {
+   "f": "PenJubilado_Activ_Econo",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "pensionado"
+  },
+  {
+   "f": "Selecciona Ocupación Hogar_Actividad_económica",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "hogar"
+  },
+  {
+   "f": "Selecciona Ocupación Estudiante_Actividad_económica",
+   "k": "c",
+   "key": "ocupacion",
+   "val": "estudiante"
+  },
+  {
+   "f": "Entidad Donde Trabaja_Actividad_económica",
+   "k": "t",
+   "key": "empresa"
+  },
+  {
+   "f": "Cargo Actual_Actividad_económica",
+   "k": "t",
+   "key": "cargo"
+  },
+  {
+   "f": "Contrato_Indefinido_Activ_Econo",
+   "k": "c",
+   "key": "contrato",
+   "val": "indefinido"
+  },
+  {
+   "f": "Contrato_Fijo_Activ_Econo",
+   "k": "c",
+   "key": "contrato",
+   "val": "fijo"
+  },
+  {
+   "f": "Fecha de ingreso Laboral_Actividad_económica",
+   "k": "d",
+   "key": "fecha_ingreso",
+   "part": "dmy"
+  },
+  {
+   "f": "Dirección Laboral_Actividad_económica",
+   "k": "t",
+   "key": "dir_trab"
+  },
+  {
+   "f": "Ciudada y Departamento Laboral_Actividad_económica",
+   "k": "t",
+   "key": "ciudad_depto_trab"
+  },
+  {
+   "f": "Telefono Laboral_Actividad_económica",
+   "k": "t",
+   "key": "tel_trab"
+  },
+  {
+   "f": "Salario/Pensión_Información_financiera",
+   "k": "t",
+   "key": "ingresos",
+   "fmt": "money"
+  },
+  {
+   "f": "Otros Ingresos_Información_financiera",
+   "k": "t",
+   "key": "otros_ingresos",
+   "fmt": "money"
+  },
+  {
+   "f": "Descripción Otros Ingresos_Información_financiera",
+   "k": "t",
+   "key": "desc_otros"
+  },
+  {
+   "f": "TotalEgresosMensuales",
+   "k": "t",
+   "key": "egresos",
+   "fmt": "money"
+  },
+  {
+   "f": "Activos_Información_financiera",
+   "k": "t",
+   "key": "activos",
+   "fmt": "money"
+  },
+  {
+   "f": "Pasivos_Información_financiera",
+   "k": "t",
+   "key": "pasivos",
+   "fmt": "money"
+  }
+ ],
+ "mmujer": [
+  {
+   "f": "FechaDiligenciamientoDia",
+   "k": "d",
+   "key": "fecha_dilig",
+   "part": "d"
+  },
+  {
+   "f": "FechaDiligenciamientoMes",
+   "k": "d",
+   "key": "fecha_dilig",
+   "part": "m"
+  },
+  {
+   "f": "FechaDiligenciamientoAño",
+   "k": "d",
+   "key": "fecha_dilig",
+   "part": "y"
+  },
+  {
+   "f": "PlazoDias_Certificado_deposito",
+   "k": "t",
+   "key": "plazo_dias"
+  },
+  {
+   "f": "TasaEA_Certificado_deposito",
+   "k": "t",
+   "key": "tasa_ea"
+  },
+  {
+   "f": "MontoInvertir_Certificado_deposito",
+   "k": "t",
+   "key": "valor",
+   "fmt": "money"
+  },
+  {
+   "f": "Nuevo Tipo CDT Materializado _Certificado_déposito_término",
+   "k": "c",
+   "key": "tipo_cdt",
+   "val": "fisico"
+  },
+  {
+   "f": "Desmaterializado _certificado_deposito_termino",
+   "k": "c",
+   "key": "tipo_cdt",
+   "val": "desmaterializado"
+  },
+  {
+   "f": "Nuevo Forma Constitución Trasferencia _Certificado_déposito_término",
+   "k": "c",
+   "key": "forma_pago",
+   "val": "transferencia"
+  },
+  {
+   "f": "Nuevo Forma Constitución Cheque _Certificado_déposito_término",
+   "k": "c",
+   "key": "forma_pago",
+   "val": "cheque"
+  },
+  {
+   "f": "Nuevo Forma Constitución Efectivo _Certificado_déposito_término",
+   "k": "c",
+   "key": "forma_pago",
+   "val": "efectivo"
+  },
+  {
+   "f": "Nuevo Forma Constitución Debito Cuenta _Certificado_déposito_término",
+   "k": "c",
+   "key": "forma_pago",
+   "val": "debito"
+  },
+  {
+   "f": "AlVencimiento_Certificado_deposito_termino",
+   "k": "c",
+   "key": "periodicidad",
+   "val": "vencimiento"
+  },
+  {
+   "f": "Nuevo Pago Interés Periódico_Certificado_déposito_término",
+   "k": "c",
+   "key": "periodicidad",
+   "val": "mensual"
+  },
+  {
+   "f": "Nuevo Pago Interés Periódico_Certificado_déposito_término",
+   "k": "c",
+   "key": "periodicidad",
+   "val": "bimestral"
+  },
+  {
+   "f": "Nuevo Pago Interés Periódico_Certificado_déposito_término",
+   "k": "c",
+   "key": "periodicidad",
+   "val": "trimestral"
+  },
+  {
+   "f": "Nuevo Pago Interés Periódico_Certificado_déposito_término",
+   "k": "c",
+   "key": "periodicidad",
+   "val": "semestral"
+  },
+  {
+   "f": "Nuevo Pago Interés Periódico_Certificado_déposito_término",
+   "k": "c",
+   "key": "periodicidad",
+   "val": "anual"
+  },
+  {
+   "f": "Nuevo Pago Interés Texto Periódico_Certificado_déposito_término",
+   "k": "t",
+   "key": "periodicidad_txt"
+  },
+  {
+   "f": "Documento_Cedula_Datos_personales",
+   "k": "c",
+   "key": "tipo_doc",
+   "val": "CC"
+  },
+  {
+   "f": "Documento_CedulaExtranjer_Datos_personales",
+   "k": "c",
+   "key": "tipo_doc",
+   "val": "CE"
+  },
+  {
+   "f": "Documento_TarjetaIdentidad_Datos_personales",
+   "k": "c",
+   "key": "tipo_doc",
+   "val": "TI"
+  },
+  {
+   "f": "Documento_Pasaporte_Datos_personales",
+   "k": "c",
+   "key": "tipo_doc",
+   "val": "PAS"
+  },
+  {
+   "f": "Documento_NUIP_Datos_personales",
+   "k": "c",
+   "key": "tipo_doc",
+   "val": "NUIP"
+  },
+  {
+   "f": "NoDocumento_Datos_personales",
+   "k": "t",
+   "key": "num_doc"
+  },
+  {
+   "f": "PRIMER NOMBRE_Datos_personales",
+   "k": "t",
+   "key": "nombre1"
+  },
+  {
+   "f": "SEGUNDO/TERCER NOMBRE_Datos_personales",
+   "k": "t",
+   "key": "nombre2"
+  },
+  {
+   "f": "PRIMER APELLIDO_Datos_personales",
+   "k": "t",
+   "key": "apellido1"
+  },
+  {
+   "f": "SEGUNDO APELLIDO_Datos_personales",
+   "k": "t",
+   "key": "apellido2"
+  },
+  {
+   "f": "FechaNacimientoDia_Datos_personales",
+   "k": "d",
+   "key": "nac_fecha",
+   "part": "d"
+  },
+  {
+   "f": "FechaNacimientoMes_Datos_personales",
+   "k": "d",
+   "key": "nac_fecha",
+   "part": "m"
+  },
+  {
+   "f": "FechaNacimientoAño_Datos_personales",
+   "k": "d",
+   "key": "nac_fecha",
+   "part": "y"
+  },
+  {
+   "f": "PaisNacimiento_Datos_personales",
+   "k": "t",
+   "key": "nac_pais"
+  },
+  {
+   "f": "DepartamentoNacimiento_Datos_personales",
+   "k": "t",
+   "key": "nac_depto"
+  },
+  {
+   "f": "MunicipioNacimiento_Datos_personales",
+   "k": "t",
+   "key": "nac_ciudad"
+  },
+  {
+   "f": "NACIONALIDAD_Datos_personales",
+   "k": "t",
+   "key": "nacionalidad"
+  },
+  {
+   "f": "CORREO ELECTRÓNICO_Datos_personales",
+   "k": "t",
+   "key": "email"
+  },
+  {
+   "f": "TELÉFONO CELULAR_Datos_personales",
+   "k": "t",
+   "key": "celular"
+  },
+  {
+   "f": "TELÉFONO FIJO  DE VIVIENDA_Datos_personales",
+   "k": "t",
+   "key": "tel_fijo"
+  },
+  {
+   "f": "DIRECCIÓN DE VIVIENDA_Datos_personales",
+   "k": "t",
+   "key": "direccion"
+  },
+  {
+   "f": "BARRIO/VEREDA_Datos_personales",
+   "k": "t",
+   "key": "barrio"
+  },
+  {
+   "f": "DEPARTAMENTO_Datos_personales",
+   "k": "t",
+   "key": "depto_res"
+  },
+  {
+   "f": "MUNICIPIO_Datos_personales",
+   "k": "t",
+   "key": "ciudad_res"
+  },
+  {
+   "f": "Estrato_Gen_Info",
+   "k": "t",
+   "key": "estrato"
+  },
+  {
+   "f": "Soltero_Datos_personales",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "soltero"
+  },
+  {
+   "f": "UnionLibre_Datos_personales",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "union"
+  },
+  {
+   "f": "Casado_Datos_personales",
+   "k": "c",
+   "key": "estado_civil",
+   "val": "casado"
+  },
+  {
+   "f": "Personas A Cargo_Datos_personales",
+   "k": "t",
+   "key": "personas_cargo"
+  },
+  {
+   "f": "Nivel Educativo Ninguno_Datos_personales",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "ninguno"
+  },
+  {
+   "f": "Nivel Educativo Primaria_Datos_personales",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "primaria"
+  },
+  {
+   "f": "Nivel Educativo Bachillerato_Datos_personales",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "bachillerato"
+  },
+  {
+   "f": "Nivel Educativo Técnico_Datos_personales",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "tecnico"
+  },
+  {
+   "f": "Nivel Educativo Tecnólogo_Datos_personales",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "tecnologo"
+  },
+  {
+   "f": "Nivel Educativo Universitario_Datos_personales",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "universitario"
+  },
+  {
+   "f": "Nivel Educativo Posgrado_Datos_personales",
+   "k": "c",
+   "key": "nivel_educ",
+   "val": "posgrado"
+  },
+  {
+   "f": "Profesión_Datos_personales",
+   "k": "t",
+   "key": "profesion"
+  },
+  {
+   "f": "ViviendaPropia_Datos_personales",
+   "k": "c",
+   "key": "tipo_vivienda",
+   "val": "propia"
+  },
+  {
+   "f": "Tipo Vivienda Alquilada_Datos_personales",
+   "k": "c",
+   "key": "tipo_vivienda",
+   "val": "arrendada"
+  },
+  {
+   "f": "Tipo Vivienda Familiar_Datos_personales",
+   "k": "c",
+   "key": "tipo_vivienda",
+   "val": "familiar"
+  },
+  {
+   "f": "NOMBRE DE LA EMPRESA_Datos_laborales",
+   "k": "t",
+   "key": "empresa"
+  },
+  {
+   "f": "NIT DE LA EMPRESA_Datos_laborales",
+   "k": "t",
+   "key": "nit_empresa"
+  },
+  {
+   "f": "CARGO QUE OCUPA EN LA EMPRESA_Datos_laborales",
+   "k": "t",
+   "key": "cargo"
+  },
+  {
+   "f": "Contrato_Indefinido_Activ_Econo",
+   "k": "c",
+   "key": "contrato",
+   "val": "indefinido"
+  },
+  {
+   "f": "Contrato_Fijo_Activ_Econo",
+   "k": "c",
+   "key": "contrato",
+   "val": "fijo"
+  },
+  {
+   "f": "Contrato_ObraOLabor_Activ_Econo",
+   "k": "c",
+   "key": "contrato",
+   "val": "obra"
+  },
+  {
+   "f": "Contrato_PrestaciondeServicios_Activ_Econo",
+   "k": "c",
+   "key": "contrato",
+   "val": "prestacion"
+  },
+  {
+   "f": "Fecha Ingreso Día_Datos_laborales",
+   "k": "d",
+   "key": "fecha_ingreso",
+   "part": "d"
+  },
+  {
+   "f": "Fecha Ingreso Mes_Datos_laborales",
+   "k": "d",
+   "key": "fecha_ingreso",
+   "part": "m"
+  },
+  {
+   "f": "Fecha Ingreso Año_Datos_laborales",
+   "k": "d",
+   "key": "fecha_ingreso",
+   "part": "y"
+  },
+  {
+   "f": "Dirección Empresa_Datos_laborales",
+   "k": "t",
+   "key": "dir_trab"
+  },
+  {
+   "f": "Departamento_Datos_laborales",
+   "k": "t",
+   "key": "depto_trab"
+  },
+  {
+   "f": "MUNICIPIO_Datos_laborales",
+   "k": "t",
+   "key": "ciudad_trab"
+  },
+  {
+   "f": "TELÉFONO DE LA EMPRESA_Datos_laborales",
+   "k": "t",
+   "key": "tel_trab"
+  },
+  {
+   "f": "CIIU_Datos_personales",
+   "k": "t",
+   "key": "ciiu"
+  },
+  {
+   "f": "DESCRIPCIÓN DE LA ACTIVIDAD ECONÓMICA_Datos_personales",
+   "k": "t",
+   "key": "actividad_desc"
+  },
+  {
+   "f": "INGRESOS MENSUALES_Información_financiera",
+   "k": "t",
+   "key": "ingresos",
+   "fmt": "money"
+  },
+  {
+   "f": "OTROS INGRESOS MENSUALES_Información_financiera",
+   "k": "t",
+   "key": "otros_ingresos",
+   "fmt": "money"
+  },
+  {
+   "f": "Describa los otros ingresos diferentes a la actividad económica principal_Información_financiera",
+   "k": "t",
+   "key": "desc_otros"
+  },
+  {
+   "f": "TOTAL INGRESOS MENSUALES_Información_financiera",
+   "k": "t",
+   "key": "total_ingresos",
+   "fmt": "money"
+  },
+  {
+   "f": "Total Egresos Info_financiera",
+   "k": "t",
+   "key": "egresos",
+   "fmt": "money"
+  },
+  {
+   "f": "TOTAL ACTIVOS_Información_financiera",
+   "k": "t",
+   "key": "activos",
+   "fmt": "money"
+  },
+  {
+   "f": "TOTAL PASIVOS_Información_financiera",
+   "k": "t",
+   "key": "pasivos",
+   "fmt": "money"
+  }
+ ]
+}

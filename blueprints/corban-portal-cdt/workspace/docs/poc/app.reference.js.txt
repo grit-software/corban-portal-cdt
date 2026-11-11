@@ -1,0 +1,482 @@
+/* Corban FC — POC apertura de CDT (4 entidades). Todo corre en el navegador. */
+(function () {
+  'use strict';
+
+  /* ---------- Catálogo de entidades ---------- */
+  const ENTIDADES = {
+    ban100: { nombre: 'Ban100', docs: ['ban_vinc', 'ban_orden'], desc: 'Vinculación + Orden de inversión', unidad: 'Plazo en días' },
+    colte:  { nombre: 'Coltefinanciera', docs: ['colte_vinc', 'colte_cdt'], desc: 'Vinculación + Formato CDT', unidad: 'Plazo en texto libre' },
+    juris:  { nombre: 'Juriscoop', docs: ['juris'], desc: 'Solicitud única de vinculación', unidad: 'Plazo en meses' },
+    mmujer: { nombre: 'Mundo Mujer', docs: ['mmujer'], desc: 'Solicitud persona natural + CDT', unidad: 'Plazo en días' }
+  };
+  const DOCNAME = {
+    ban_vinc: 'Ban100 · Vinculación persona natural',
+    ban_orden: 'Ban100 · Orden de inversión',
+    colte_vinc: 'Coltefinanciera · Vinculación persona natural',
+    colte_cdt: 'Coltefinanciera · Formato CDT',
+    juris: 'Juriscoop · Solicitud de vinculación',
+    mmujer: 'Mundo Mujer · Solicitud persona natural'
+  };
+  const DOCSHORT = { ban_vinc: 'Ban100_Vinculacion', ban_orden: 'Ban100_Orden_de_inversion', colte_vinc: 'Coltefinanciera_Vinculacion', colte_cdt: 'Coltefinanciera_CDT', juris: 'Juriscoop_Solicitud', mmujer: 'MundoMujer_Solicitud' };
+
+  const OPT = {
+    tipo_cdt: [['desmaterializado', 'Desmaterializado'], ['fisico', 'Físico']],
+    periodicidad: [['vencimiento', 'Al vencimiento'], ['mensual', 'Mensual'], ['bimestral', 'Bimestral'], ['trimestral', 'Trimestral'], ['semestral', 'Semestral'], ['anual', 'Anual']],
+    forma_pago: [['transferencia', 'Transferencia / consignación'], ['cheque', 'Cheque'], ['efectivo', 'Efectivo'], ['debito', 'Débito de cuenta']],
+    tipo_doc: [['CC', 'Cédula de ciudadanía'], ['CE', 'Cédula de extranjería'], ['TI', 'Tarjeta de identidad'], ['PAS', 'Pasaporte'], ['NUIP', 'NUIP']],
+    sexo: [['F', 'Femenino'], ['M', 'Masculino']],
+    estado_civil: [['soltero', 'Soltero(a)'], ['casado', 'Casado(a)'], ['union', 'Unión libre'], ['viudo', 'Viudo(a)'], ['divorciado', 'Divorciado(a)'], ['separado', 'Separado(a)']],
+    nivel_educ: [['ninguno', 'Ninguno'], ['primaria', 'Primaria'], ['bachillerato', 'Bachillerato'], ['tecnico', 'Técnico'], ['tecnologo', 'Tecnólogo'], ['universitario', 'Universitario'], ['posgrado', 'Posgrado']],
+    tipo_vivienda: [['propia', 'Propia'], ['arrendada', 'Arrendada'], ['familiar', 'Familiar']],
+    ocupacion: [['empleado', 'Empleado'], ['independiente', 'Independiente'], ['pensionado', 'Pensionado / jubilado'], ['rentista', 'Rentista de capital'], ['hogar', 'Hogar'], ['estudiante', 'Estudiante'], ['desempleado', 'Desempleado']],
+    contrato: [['indefinido', 'Término indefinido'], ['fijo', 'Término fijo'], ['obra', 'Obra o labor'], ['prestacion', 'Prestación de servicios']],
+    declara_renta: [['si', 'Sí'], ['no', 'No']]
+  };
+  const label = (k, v) => { const o = (OPT[k] || []).find(x => x[0] === v); return o ? o[1] : (v || ''); };
+
+  /* ---------- Pasos del formulario ---------- */
+  const STEPS = [
+    { id: 'cdt', label: 'CDT' },
+    { id: 'personal', label: 'Personal', title: 'Datos personales', sections: [
+      { t: null, f: [
+        ['nombre1', 'Primer nombre', 'text', { req: 1 }], ['nombre2', 'Segundo nombre', 'text'],
+        ['apellido1', 'Primer apellido', 'text', { req: 1 }], ['apellido2', 'Segundo apellido', 'text'],
+        ['tipo_doc', 'Tipo de documento', 'select', { req: 1 }], ['num_doc', 'Número de documento', 'text', { req: 1 }],
+        ['exp_fecha', 'Fecha de expedición', 'date'], ['exp_lugar', 'Lugar de expedición', 'text'],
+        ['sexo', 'Sexo', 'select'], ['nac_fecha', 'Fecha de nacimiento', 'date'],
+        ['nac_pais', 'País de nacimiento', 'text'], ['nac_ciudad', 'Ciudad de nacimiento', 'text'],
+        ['nacionalidad', 'Nacionalidad', 'text'], ['estado_civil', 'Estado civil', 'select'],
+        ['personas_cargo', 'Personas a cargo', 'number'], ['nivel_educ', 'Nivel educativo', 'select'],
+        ['profesion', 'Profesión u oficio', 'text']
+      ] },
+      { t: 'Contacto y residencia', f: [
+        ['email', 'Correo electrónico', 'email'], ['celular', 'Celular', 'tel'], ['tel_fijo', 'Teléfono fijo', 'tel'],
+        ['direccion', 'Dirección de residencia', 'text', { full: 1 }],
+        ['barrio', 'Barrio', 'text'], ['ciudad_res', 'Ciudad / municipio', 'text'],
+        ['depto_res', 'Departamento', 'text'], ['pais_res', 'País', 'text'],
+        ['estrato', 'Estrato', 'number'], ['tipo_vivienda', 'Tipo de vivienda', 'select']
+      ] }
+    ] },
+    { id: 'laboral', label: 'Laboral', title: 'Información laboral', sections: [
+      { t: null, f: [
+        ['ocupacion', 'Ocupación', 'select'], ['empresa', 'Empresa o negocio', 'text'],
+        ['nit_empresa', 'NIT de la empresa', 'text'], ['cargo', 'Cargo actual', 'text'],
+        ['contrato', 'Tipo de contrato', 'select'], ['fecha_ingreso', 'Fecha de ingreso', 'date'],
+        ['dir_trab', 'Dirección del trabajo', 'text', { full: 1 }],
+        ['ciudad_trab', 'Ciudad / municipio', 'text'], ['depto_trab', 'Departamento', 'text'],
+        ['pais_trab', 'País', 'text'], ['tel_trab', 'Teléfono del trabajo', 'tel'],
+        ['ciiu', 'Código CIIU (actividad económica)', 'text'], ['actividad_desc', 'Descripción de la actividad', 'text']
+      ] }
+    ] },
+    { id: 'financiera', label: 'Financiera', title: 'Información financiera', sections: [
+      { t: 'Ingresos y egresos mensuales (COP)', f: [
+        ['ingresos', 'Ingresos mensuales (salario, honorarios)', 'money'], ['otros_ingresos', 'Otros ingresos mensuales', 'money'],
+        ['desc_otros', 'Descripción de otros ingresos', 'text', { full: 1 }],
+        ['egresos', 'Egresos mensuales', 'money']
+      ] },
+      { t: 'Patrimonio (COP)', f: [
+        ['activos', 'Total activos', 'money'], ['pasivos', 'Total pasivos', 'money'],
+        ['declara_renta', '¿Declara renta?', 'select']
+      ] }
+    ] },
+    { id: 'resumen', label: 'Resumen' },
+    { id: 'docs', label: 'Documentos' }
+  ];
+
+  /* ---------- Estado ---------- */
+  const hoy = new Date();
+  const iso = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  const data = {
+    entidad: '', tipo_cdt: 'desmaterializado', ciudad: '', oficina: '',
+    fecha_dilig: iso(hoy), fecha_apertura: iso(hoy), plazo_dias: '', valor: '', tasa_ea: '',
+    periodicidad: 'vencimiento', forma_pago: 'transferencia', nacionalidad: 'Colombiana', pais_res: 'Colombia', pais_trab: 'Colombia'
+  };
+  let current = 0;
+  const $ = id => document.getElementById(id);
+
+  /* ---------- Utilidades ---------- */
+  const num = v => { const n = parseInt(String(v || '').replace(/\D/g, ''), 10); return isNaN(n) ? 0 : n; };
+  const money = n => n ? new Intl.NumberFormat('es-CO').format(n) : '';
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  const fmtDate = v => { if (!v) return ''; const [y, m, d] = v.split('-'); return d + '/' + m + '/' + y; };
+  function addDays(isoStr, n) {
+    if (!isoStr || !n) return '';
+    const [y, m, d] = isoStr.split('-').map(Number);
+    const dt = new Date(Date.UTC(y, m - 1, d + n));
+    return dt.getUTCFullYear() + '-' + String(dt.getUTCMonth() + 1).padStart(2, '0') + '-' + String(dt.getUTCDate()).padStart(2, '0');
+  }
+
+  const U = ['', 'UN', 'DOS', 'TRES', 'CUATRO', 'CINCO', 'SEIS', 'SIETE', 'OCHO', 'NUEVE', 'DIEZ', 'ONCE', 'DOCE', 'TRECE', 'CATORCE', 'QUINCE', 'DIECISÉIS', 'DIECISIETE', 'DIECIOCHO', 'DIECINUEVE', 'VEINTE', 'VEINTIÚN', 'VEINTIDÓS', 'VEINTITRÉS', 'VEINTICUATRO', 'VEINTICINCO', 'VEINTISÉIS', 'VEINTISIETE', 'VEINTIOCHO', 'VEINTINUEVE'];
+  const DEC = ['', '', '', 'TREINTA', 'CUARENTA', 'CINCUENTA', 'SESENTA', 'SETENTA', 'OCHENTA', 'NOVENTA'];
+  const CEN = ['', 'CIENTO', 'DOSCIENTOS', 'TRESCIENTOS', 'CUATROCIENTOS', 'QUINIENTOS', 'SEISCIENTOS', 'SETECIENTOS', 'OCHOCIENTOS', 'NOVECIENTOS'];
+  function menorMil(n) {
+    if (n === 100) return 'CIEN';
+    const c = Math.floor(n / 100), r = n % 100;
+    let s = c ? CEN[c] : '';
+    if (r) {
+      if (s) s += ' ';
+      if (r < 30) s += U[r];
+      else { const d = Math.floor(r / 10), u = r % 10; s += DEC[d] + (u ? ' Y ' + U[u] : ''); }
+    }
+    return s;
+  }
+  function bajoMillon(n) {
+    const miles = Math.floor(n / 1000), r = n % 1000, p = [];
+    if (miles) p.push(miles === 1 ? 'MIL' : menorMil(miles) + ' MIL');
+    if (r) p.push(menorMil(r));
+    return p.join(' ');
+  }
+  function enLetras(n) {
+    if (!n || n >= 1e12) return '';
+    const mm = Math.floor(n / 1e6), rest = n % 1e6;
+    let s = '';
+    if (mm) s = mm === 1 ? 'UN MILLÓN' : (mm < 1000 ? menorMil(mm) : bajoMillon(mm)) + ' MILLONES';
+    if (rest) s += (s ? ' ' : '') + bajoMillon(rest);
+    if (mm && !rest) s += ' DE';
+    return s;
+  }
+  const valorLetras = n => n ? enLetras(n) + ' PESOS M/CTE' : '';
+
+  /* ---------- Derivados ---------- */
+  function derive() {
+    const D = Object.assign({}, data);
+    const dias = num(data.plazo_dias);
+    D.fecha_venc = addDays(data.fecha_apertura, dias);
+    D.plazo_meses = dias ? String(Math.round(dias / 30)) : '';
+    D.plazo_txt = dias ? dias + ' días' : '';
+    D.valor = num(data.valor) || '';
+    D.valor_letras = valorLetras(num(data.valor));
+    D.nombre_completo = [data.nombre1, data.nombre2, data.apellido1, data.apellido2].filter(Boolean).join(' ');
+    D.lugar_nac = [data.nac_ciudad, data.nac_pais].filter(Boolean).join(', ');
+    D.ciudad_depto_res = [data.ciudad_res, data.depto_res].filter(Boolean).join(', ');
+    D.ciudad_depto_trab = [data.ciudad_trab, data.depto_trab].filter(Boolean).join(', ');
+    D.contrato_txt = label('contrato', data.contrato);
+    D.periodicidad_txt = data.periodicidad === 'vencimiento' ? 'Al vencimiento' : label('periodicidad', data.periodicidad);
+    const ing = num(data.ingresos), oi = num(data.otros_ingresos);
+    D.total_ingresos = (ing + oi) || '';
+    D.patrimonio = (num(data.activos) || num(data.pasivos)) ? (num(data.activos) - num(data.pasivos)) : '';
+    ['ingresos', 'otros_ingresos', 'egresos', 'activos', 'pasivos'].forEach(k => { D[k] = num(data[k]) || ''; });
+    return D;
+  }
+
+  /* ---------- Render ---------- */
+  function fieldHTML(f) {
+    const [k, lab, type, o] = f; const opt = o || {};
+    const v = data[k] == null ? '' : data[k];
+    const cls = 'field' + (opt.full ? ' full' : '');
+    const req = opt.req ? ' <span class="req">*</span>' : '';
+    let input;
+    if (type === 'select') {
+      input = '<select data-k="' + k + '"><option value="">Selecciona</option>' +
+        (OPT[k] || []).map(o2 => '<option value="' + o2[0] + '"' + (o2[0] === v ? ' selected' : '') + '>' + o2[1] + '</option>').join('') + '</select>';
+    } else if (type === 'money') {
+      input = '<input type="text" inputmode="numeric" data-k="' + k + '" data-money="1" value="' + esc(money(num(v))) + '" placeholder="0">';
+    } else {
+      input = '<input type="' + type + '" data-k="' + k + '" value="' + esc(v) + '"' + (type === 'number' ? ' min="0"' : '') + '>';
+    }
+    return '<div class="' + cls + '" data-wrap="' + k + '"><label>' + lab + req + '</label>' + input + (opt.hint ? '<div class="hint">' + opt.hint + '</div>' : '') + '</div>';
+  }
+
+  function renderSteps() {
+    $('steps').innerHTML = STEPS.map((s, i) => {
+      const cls = i === current ? 'step active' : (i < current ? 'step done' : 'step');
+      return '<div class="' + cls + '" data-go="' + i + '"><span class="dot">' + (i < current ? '&#10003;' : i + 1) + '</span><span>' + s.label + '</span></div>';
+    }).join('');
+  }
+
+  function cdtHTML() {
+    const ent = ENTIDADES[data.entidad];
+    let h = '<div class="test-bar"><button class="link-btn" id="btnDemo">Cargar datos de ejemplo</button></div>';
+    h += '<h3 class="section-title">¿En qué entidad se abre el CDT?</h3><p class="section-hint">Cada entidad usa sus propios formatos. Tu información se diligencia una sola vez.</p>';
+    h += '<div class="ent-grid">' + Object.entries(ENTIDADES).map(([id, e]) =>
+      '<button type="button" class="ent-card' + (data.entidad === id ? ' sel' : '') + '" data-ent="' + id + '"><div class="n">' + e.nombre + '</div><div class="d">' + e.desc + '</div><span class="u">' + e.unidad + '</span></button>').join('') + '</div>';
+    h += '<h3 class="section-title" style="margin-top:6px">Condiciones del CDT</h3><div class="field-grid">';
+    h += fieldHTML(['tipo_cdt', 'Tipo de CDT', 'select', { req: 1 }]);
+    h += fieldHTML(['ciudad', 'Ciudad de diligenciamiento', 'text', { req: 1 }]);
+    h += fieldHTML(['fecha_dilig', 'Fecha de diligenciamiento', 'date']);
+    h += fieldHTML(['fecha_apertura', 'Fecha de apertura', 'date', { req: 1 }]);
+    h += '<div class="field" data-wrap="plazo_dias"><label>Plazo (días) <span class="req">*</span></label><input type="number" min="1" data-k="plazo_dias" value="' + esc(data.plazo_dias) + '" placeholder="Ej. 180">' +
+      '<div class="chips">' + [90, 120, 180, 270, 360, 540].map(d => '<button type="button" class="chip" data-plazo="' + d + '">' + d + ' d</button>').join('') + '</div></div>';
+    h += fieldHTML(['valor', 'Valor de la inversión (COP)', 'money', { req: 1 }]);
+    h += fieldHTML(['tasa_ea', 'Tasa E.A. (%) — opcional', 'text', { hint: 'Si la dejas vacía, queda en blanco para que la entidad la defina.' }]);
+    h += fieldHTML(['periodicidad', 'Pago de intereses', 'select']);
+    h += fieldHTML(['forma_pago', 'Forma de pago de la inversión', 'select']);
+    h += fieldHTML(['oficina', 'Oficina o agencia — opcional', 'text']);
+    h += '<div class="calc" id="calcBox"></div>';
+    h += '</div>';
+    return h;
+  }
+
+  function calcHTML() {
+    const D = derive();
+    const dias = num(data.plazo_dias);
+    let h = '';
+    h += '<div><span class="l">Vencimiento estimado</span><b>' + (D.fecha_venc ? fmtDate(D.fecha_venc) : '—') + '</b></div>';
+    h += '<div><span class="l">Valor en letras</span><b>' + (D.valor_letras || '—') + '</b></div>';
+    if (data.entidad === 'juris') {
+      const exacto = dias && dias % 30 === 0;
+      h += '<div><span class="l">Plazo para Juriscoop (meses)</span><b>' + (D.plazo_meses || '—') + (dias && !exacto ? ' (aprox.)' : '') + '</b></div>';
+    }
+    return h;
+  }
+
+  function refreshCalc() {
+    const box = $('calcBox'); if (box) box.innerHTML = calcHTML();
+    const t = $('calcFin'); if (t) t.innerHTML = finCalcHTML();
+  }
+  function finCalcHTML() {
+    const D = derive();
+    return '<div><span class="l">Total ingresos mensuales</span><b>$ ' + (money(D.total_ingresos) || '0') + '</b></div>' +
+      '<div><span class="l">Patrimonio (activos − pasivos)</span><b>$ ' + (D.patrimonio === '' ? '0' : money(D.patrimonio)) + '</b></div>';
+  }
+
+  function formHTML(step) {
+    let h = '';
+    step.sections.forEach(sec => {
+      if (sec.t) h += '<h3 class="section-title" style="margin-top:' + (h ? '22px' : '0') + '">' + sec.t + '</h3>';
+      else h += '<h3 class="section-title">' + step.title + '</h3>';
+      h += '<div class="field-grid">' + sec.f.map(fieldHTML).join('');
+      if (step.id === 'financiera' && sec.t && sec.t.startsWith('Patrimonio')) h += '<div class="calc" id="calcFin"></div>';
+      h += '</div>';
+    });
+    return h;
+  }
+
+  function resumenHTML() {
+    const D = derive();
+    const row = (l, v) => '<div class="summary-row"><span>' + l + '</span><span class="val">' + (v ? esc(v) : '—') + '</span></div>';
+    let h = '<h3 class="section-title">Resumen de tu solicitud</h3><p class="section-hint">Revisa los datos antes de generar los formatos. Puedes volver a cualquier sección para corregir.</p>';
+    h += '<div class="summary-section-title">CDT</div>';
+    const e = ENTIDADES[data.entidad];
+    h += row('Entidad', e ? e.nombre : '') + row('Tipo de CDT', label('tipo_cdt', data.tipo_cdt)) +
+      row('Fecha de apertura', fmtDate(data.fecha_apertura)) + row('Plazo', D.plazo_txt) + row('Vencimiento estimado', fmtDate(D.fecha_venc)) +
+      row('Valor', D.valor ? '$ ' + money(D.valor) : '') + row('Valor en letras', D.valor_letras) +
+      row('Tasa E.A.', data.tasa_ea) + row('Pago de intereses', label('periodicidad', data.periodicidad)) + row('Forma de pago', label('forma_pago', data.forma_pago));
+    STEPS.filter(s => s.sections).forEach(st => {
+      h += '<div class="summary-section-title">' + st.label + '</div>';
+      st.sections.forEach(sec => sec.f.forEach(f => {
+        const k = f[0]; let v = data[k];
+        if (f[2] === 'select') v = label(k, v);
+        else if (f[2] === 'money') v = v ? '$ ' + money(num(v)) : '';
+        else if (f[2] === 'date') v = fmtDate(v);
+        h += row(f[1], v);
+      }));
+    });
+    return h;
+  }
+
+  function docsHTML() {
+    const e = ENTIDADES[data.entidad];
+    let h = '<h3 class="section-title">Formatos de ' + e.nombre + '</h3><p class="section-hint">Se generan sobre los PDF oficiales de la entidad. Descárgalos para revisarlos y firmarlos.</p>';
+    h += '<div class="notice">Quedan <b>en blanco a propósito</b>: declaraciones y autorizaciones (PEP, FATCA/CRS, moneda extranjera, origen de fondos, habeas data), referencias, cónyuge, firmas y huellas. Deben ser diligenciadas y firmadas por el cliente.</div>';
+    h += '<div class="doc-list">' + e.docs.map(k =>
+      '<div class="doc-card" data-doc="' + k + '"><div class="ic">PDF</div><div class="t"><b>' + DOCNAME[k] + '</b><span>Formato oficial diligenciado</span></div>' +
+      '<div class="acts"><button class="btn" data-act="view">Vista previa</button><button class="btn primary" data-act="dl">Descargar</button></div><div class="st" data-st></div></div>').join('') + '</div>';
+    if (e.docs.length > 1) h += '<div><button class="btn" id="btnAll">Descargar todos</button></div>';
+    h += '<p class="section-hint" style="margin-top:18px">¿Quieres comparar otra entidad? Vuelve al paso «CDT», elige otra y regresa aquí: tus datos se conservan.</p>';
+    return h;
+  }
+
+  function render() {
+    renderSteps();
+    const s = STEPS[current], body = $('stepBody');
+    if (s.id === 'cdt') body.innerHTML = cdtHTML();
+    else if (s.id === 'resumen') body.innerHTML = resumenHTML();
+    else if (s.id === 'docs') body.innerHTML = docsHTML();
+    else body.innerHTML = formHTML(s);
+    $('progressFill').style.width = Math.round(((current + 1) / STEPS.length) * 100) + '%';
+    $('btnBack').style.visibility = current === 0 ? 'hidden' : 'visible';
+    $('btnNext').style.display = current === STEPS.length - 1 ? 'none' : '';
+    $('btnNext').textContent = current === STEPS.length - 2 ? 'Generar formatos' : 'Siguiente';
+    $('errMsg').textContent = '';
+    refreshCalc();
+  }
+
+  /* ---------- Validación ---------- */
+  function missing(stepIdx) {
+    const s = STEPS[stepIdx], miss = [];
+    const need = (k, l) => { if (!data[k] || (k === 'valor' && !num(data[k])) || (k === 'plazo_dias' && !num(data[k]))) miss.push([k, l]); };
+    if (s.id === 'cdt') {
+      if (!data.entidad) miss.push(['entidad', 'la entidad']);
+      need('tipo_cdt', 'el tipo de CDT'); need('ciudad', 'la ciudad'); need('fecha_apertura', 'la fecha de apertura');
+      need('plazo_dias', 'el plazo'); need('valor', 'el valor de la inversión');
+    }
+    if (s.sections) s.sections.forEach(sec => sec.f.forEach(f => { if (f[3] && f[3].req) need(f[0], f[1].toLowerCase()); }));
+    return miss;
+  }
+  function tryGo(i) {
+    if (i > current) {
+      for (let j = current; j < i && j < STEPS.length; j++) {
+        const m = missing(j);
+        if (m.length) {
+          if (j !== current) { current = j; render(); }
+          m.forEach(x => { const w = document.querySelector('[data-wrap="' + x[0] + '"]'); if (w) w.classList.add('err'); });
+          $('errMsg').textContent = 'Falta completar: ' + m.map(x => x[1]).join(', ') + '.';
+          return;
+        }
+      }
+    }
+    current = Math.max(0, Math.min(i, STEPS.length - 1));
+    render();
+    window.scrollTo({ top: 0 });
+  }
+
+  /* ---------- Eventos ---------- */
+  document.addEventListener('click', ev => {
+    const t = ev.target.closest('[data-go],[data-ent],[data-plazo],[data-act],#btnDemo,#btnAll');
+    if (!t) return;
+    if (t.dataset.go != null) return tryGo(+t.dataset.go);
+    if (t.dataset.ent) { data.entidad = t.dataset.ent; document.querySelectorAll('.ent-card').forEach(c => c.classList.toggle('sel', c.dataset.ent === data.entidad)); refreshCalc(); return; }
+    if (t.dataset.plazo) { data.plazo_dias = t.dataset.plazo; const i = document.querySelector('[data-k="plazo_dias"]'); if (i) i.value = data.plazo_dias; refreshCalc(); return; }
+    if (t.id === 'btnDemo') { fillDemo(); render(); return; }
+    if (t.id === 'btnAll') { downloadAll(); return; }
+    if (t.dataset.act) { const card = t.closest('.doc-card'); runDoc(card, t.dataset.act); }
+  });
+  document.addEventListener('input', ev => {
+    const el = ev.target; const k = el.dataset && el.dataset.k; if (!k) return;
+    if (el.dataset.money) { const n = num(el.value); el.value = money(n); data[k] = n ? String(n) : ''; }
+    else data[k] = el.value;
+    const w = el.closest('.field'); if (w) w.classList.remove('err');
+    refreshCalc();
+  });
+  $('btnNext').addEventListener('click', () => tryGo(current + 1));
+  $('btnBack').addEventListener('click', () => tryGo(current - 1));
+
+  function fillDemo() {
+    Object.assign(data, {
+      entidad: data.entidad || 'ban100', tipo_cdt: 'desmaterializado', ciudad: 'Medellín', oficina: 'Poblado',
+      plazo_dias: '180', valor: '50000000', tasa_ea: '10.5', periodicidad: 'vencimiento', forma_pago: 'transferencia',
+      nombre1: 'María', nombre2: 'Fernanda', apellido1: 'Gómez', apellido2: 'Restrepo', tipo_doc: 'CC', num_doc: '43123456',
+      exp_fecha: '2005-03-14', exp_lugar: 'Medellín', sexo: 'F', nac_fecha: '1985-07-22', nac_pais: 'Colombia', nac_ciudad: 'Medellín',
+      nacionalidad: 'Colombiana', estado_civil: 'soltero', personas_cargo: '1', nivel_educ: 'universitario', profesion: 'Contadora',
+      email: 'maria.gomez@ejemplo.com', celular: '3001234567', tel_fijo: '6041234567', direccion: 'Calle 10 # 40-25 Apto 301',
+      barrio: 'El Poblado', ciudad_res: 'Medellín', depto_res: 'Antioquia', pais_res: 'Colombia', estrato: '5', tipo_vivienda: 'propia',
+      ocupacion: 'empleado', empresa: 'Industrias Ejemplo S.A.S.', nit_empresa: '900123456', cargo: 'Gerente financiera', contrato: 'indefinido',
+      fecha_ingreso: '2016-02-01', dir_trab: 'Carrera 43A # 1-50 Of. 502', ciudad_trab: 'Medellín', depto_trab: 'Antioquia', pais_trab: 'Colombia',
+      tel_trab: '6045551234', ciiu: '6920', actividad_desc: 'Actividades de contabilidad',
+      ingresos: '12000000', otros_ingresos: '1500000', desc_otros: 'Arrendamiento de un local', egresos: '6500000',
+      activos: '480000000', pasivos: '120000000', declara_renta: 'si'
+    });
+  }
+
+  /* ---------- Generación de PDF ---------- */
+  const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const clean = s => String(s == null ? '' : s).replace(/[^\u0000-ÿ]/g, '?');
+  const same = (a, b) => String(a == null ? '' : a).trim().toLowerCase().replace(/o$/, 'a') === String(b).toLowerCase().replace(/o$/, 'a');
+  const dateOut = (iso2, part) => {
+    if (!iso2) return '';
+    const [y, m, d] = iso2.split('-');
+    return part === 'd' ? d : part === 'm' ? m : part === 'y' ? y : d + '/' + m + '/' + y;
+  };
+
+  // Algunos PDF traen dos widgets casi idénticos para el mismo campo de texto; al rellenar se ve el texto doble.
+  function dedupeWidgets(pdf, form) {
+    const L = PDFLib;
+    form.getFields().forEach(f => {
+      if (!(f instanceof L.PDFTextField)) return;
+      const af = f.acroField, ws = af.getWidgets();
+      if (ws.length < 2) return;
+      const kids = af.Kids();
+      for (let i = ws.length - 1; i >= 1; i--) {
+        const r = ws[i].getRectangle();
+        for (let j = 0; j < i; j++) {
+          const q = ws[j].getRectangle();
+          if (Math.abs(r.x - q.x) < 3 && Math.abs(r.y - q.y) < 3 && Math.abs(r.width - q.width) < 3 && Math.abs(r.height - q.height) < 3) {
+            const ref = String(kids.get(i));
+            pdf.getPages().forEach(p => {
+              const an = p.node.Annots(); if (!an) return;
+              for (let k = an.size() - 1; k >= 0; k--) if (String(an.get(k)) === ref) an.remove(k);
+            });
+            af.removeWidget(i);
+            break;
+          }
+        }
+      }
+    });
+  }
+
+  async function generate(docKey) {
+    const L = PDFLib;
+    const pdf = await L.PDFDocument.load(b64(PDFS[docKey]), { ignoreEncryption: true });
+    const form = pdf.getForm();
+    dedupeWidgets(pdf, form);
+    const byName = {};
+    form.getFields().forEach(f => { byName[f.getName()] = f; });
+    const report = { notFound: [], skipped: [], text: 0, checks: 0 };
+
+    // 1) Limpiar valores que el PDF trae marcados de fábrica
+    Object.values(byName).forEach(f => {
+      try {
+        if (f instanceof L.PDFTextField) f.setText(undefined);
+        else if (f instanceof L.PDFCheckBox) f.uncheck();
+        else if (f instanceof L.PDFRadioGroup) f.clear();
+        else if (f instanceof L.PDFDropdown || f instanceof L.PDFOptionList) f.clear();
+      } catch (e) { /* campo sin valor */ }
+    });
+
+    // 2) Aplicar el mapeo
+    const D = derive();
+    const setText = (name, val) => {
+      const f = byName[name];
+      if (!f) { report.notFound.push(name); return; }
+      if (val === '' || val == null) return;
+      try {
+        if (f instanceof L.PDFTextField) { f.setText(clean(val)); report.text++; }
+        else report.skipped.push(name + ' (no es texto)');
+      } catch (e) { report.skipped.push(name + ': ' + e.message); }
+    };
+    const setCheck = name => {
+      const f = byName[name];
+      if (!f) { report.notFound.push(name); return; }
+      try {
+        if (f instanceof L.PDFCheckBox) { f.check(); report.checks++; }
+        else if (f instanceof L.PDFRadioGroup) { const o = f.getOptions(); if (o.length) { f.select(o[0]); report.checks++; } }
+        else if (f instanceof L.PDFTextField) { f.setText('X'); report.checks++; }
+        else report.skipped.push(name + ' (no es casilla)');
+      } catch (e) { report.skipped.push(name + ': ' + e.message); }
+    };
+    (MAPPING[docKey] || []).forEach(r => {
+      if (r.k === 't') {
+        const v = D[r.key];
+        setText(r.f, r.fmt === 'money' ? money(v) : (v == null ? '' : String(v)));
+      } else if (r.k === 'c') { if (D[r.key] && same(D[r.key], r.val)) setCheck(r.f); }
+      else if (r.k === 'x') setCheck(r.f);
+      else if (r.k === 's') setText(r.f, r.val);
+      else if (r.k === 'd') setText(r.f, dateOut(D[r.key], r.part));
+      else if (r.k === 'tv') { if (D[r.cond[0]] === r.cond[1]) setText(r.f, r.fmt === 'money' ? money(D[r.key]) : D[r.key]); }
+    });
+
+    const font = await pdf.embedFont(L.StandardFonts.Helvetica);
+    form.updateFieldAppearances(font);
+    const bytes = await pdf.save();
+    return { bytes, report };
+  }
+
+  function fileName(k) {
+    const ap = (data.apellido1 || 'cliente').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]/g, '');
+    return DOCSHORT[k] + '_' + ap + '.pdf';
+  }
+  function saveBlob(bytes, name, open) {
+    const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+    if (open) { window.open(url, '_blank'); return; }
+    const a = document.createElement('a'); a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+  async function runDoc(card, act) {
+    const k = card.dataset.doc, st = card.querySelector('[data-st]');
+    st.className = 'st'; st.textContent = 'Generando…';
+    try {
+      const { bytes, report } = await generate(k);
+      saveBlob(bytes, fileName(k), act === 'view');
+      st.className = 'st ok';
+      st.textContent = 'Listo: ' + report.text + ' campos de texto y ' + report.checks + ' casillas diligenciados.' + (report.notFound.length ? ' (' + report.notFound.length + ' campos no encontrados)' : '');
+    } catch (e) { st.className = 'st bad'; st.textContent = 'Error al generar: ' + e.message; console.error(e); }
+  }
+  async function downloadAll() {
+    for (const card of document.querySelectorAll('.doc-card')) { await runDoc(card, 'dl'); await new Promise(r => setTimeout(r, 400)); }
+  }
+
+  window.__poc = { data, derive, generate, ENTIDADES, MAPPING: window.MAPPING, fillDemo, valorLetras, tryGo, render };
+  render();
+})();

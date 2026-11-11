@@ -1,0 +1,66 @@
+# CI de Corban CDT: el mismo gate que §20.1 del blueprint, contra un Postgres de servicio.
+# Las versiones de las acciones (@v4) no se verificaron en la sesión de diseño: confirmarlas
+# en GitHub Marketplace antes del primer push (ver §11).
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: corban
+          POSTGRES_PASSWORD: corban
+          POSTGRES_DB: corban
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U corban -d corban"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      DATABASE_URL: postgres://corban:corban@localhost:5432/corban
+      TEST_DATABASE_URL: postgres://corban:corban@localhost:5432/corban_test
+      BETTER_AUTH_SECRET: ci-solo-pruebas-no-es-un-secreto-0123456789abcdef
+      BETTER_AUTH_URL: http://localhost:3000
+      AUTH_TEST_LOGIN: "1"
+      ADMIN_EMAIL: admin.ci@corbanfc.com
+      STORAGE_DRIVER: fs
+      MAIL_DRIVER: file
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec biome ci .
+      - run: pnpm typecheck
+      - run: pnpm db:migrate
+      - run: pnpm db:test:prepare
+      - run: pnpm test
+      - run: pnpm build
+      - name: Smoke del servidor standalone
+        run: |
+          sh scripts/smoke-standalone.sh /api/health '"status":"ok"'
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: resultados-playwright
+          path: test-results/

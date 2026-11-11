@@ -1,0 +1,31 @@
+# Servicios locales. `docker compose up -d --wait postgres` vuelve solo cuando el healthcheck
+# reporta saludable. Mailpit es opcional (perfil "correo") para probar MAIL_DRIVER=smtp.
+# Etiquetas de imagen SIN VERIFICAR en la sesión de diseño (Docker Hub no era accesible):
+# confirmar con `docker pull` antes del primer uso (ver §11 del blueprint).
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: corban
+      POSTGRES_PASSWORD: corban
+      POSTGRES_DB: corban
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U corban -d corban"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+  mailpit:
+    image: axllent/mailpit:latest
+    profiles: ["correo"]
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  pgdata:

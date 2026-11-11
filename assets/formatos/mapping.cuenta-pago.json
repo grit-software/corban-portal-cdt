@@ -1,0 +1,268 @@
+{
+ "ban_orden": [
+  {
+   "f": "Forma Pago Intereses Transferencia_Información_general",
+   "k": "x"
+  },
+  {
+   "f": "Forma Pago Intereses AHO_Información_general",
+   "k": "c",
+   "key": "cta_tipo",
+   "val": "ahorros"
+  },
+  {
+   "f": "Forma Pago Intereses CTE_Información_general",
+   "k": "c",
+   "key": "cta_tipo",
+   "val": "corriente"
+  },
+  {
+   "f": "Forma Pago Intereses Banco_Información_general",
+   "k": "t",
+   "key": "cta_banco"
+  },
+  {
+   "f": "Forma Pago Intereses Cuenta No.1_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 0
+  },
+  {
+   "f": "Forma Pago Intereses Cuenta No.2_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 1
+  },
+  {
+   "f": "Forma Pago Intereses Cuenta No.3_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 2
+  },
+  {
+   "f": "Forma Pago Intereses Cuenta No.4_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 3
+  },
+  {
+   "f": "Forma Pago Intereses Cuenta No.5_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 4
+  },
+  {
+   "f": "Forma Pago Intereses Cuenta No.6_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 5
+  },
+  {
+   "f": "Forma Pago Intereses Cuenta No.7_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 6
+  },
+  {
+   "f": "Forma Pago Intereses Cuenta No.8_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 7
+  },
+  {
+   "f": "Forma Pago Intereses Cuenta No.9_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 8
+  },
+  {
+   "f": "Forma Pago Intereses Cuenta No.10_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 9
+  },
+  {
+   "f": "Forma Pago Intereses Cuenta No.11_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 10
+  },
+  {
+   "f": "Forma Pago Intereses Cuenta No.12_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 11
+  },
+  {
+   "f": "Forma Pago Intereses Cuenta No.13_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 12
+  },
+  {
+   "f": "Forma Pago Intereses Cuenta No.14_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 13
+  },
+  {
+   "f": "Forma Pago Intereses Cuenta No.15_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 14
+  },
+  {
+   "f": "Forma Pago Capital Transferencia_Información_general",
+   "k": "x"
+  },
+  {
+   "f": "Forma Pago Capital AHO_Información_general",
+   "k": "c",
+   "key": "cta_tipo",
+   "val": "ahorros"
+  },
+  {
+   "f": "Forma Pago Capital CTE_Información_general",
+   "k": "c",
+   "key": "cta_tipo",
+   "val": "corriente"
+  },
+  {
+   "f": "Forma Pago Capital Banco_Información_general",
+   "k": "t",
+   "key": "cta_banco"
+  },
+  {
+   "f": "Forma Pago Capital Cuenta No.1_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 0
+  },
+  {
+   "f": "Forma Pago Capital Cuenta No.2_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 1
+  },
+  {
+   "f": "Forma Pago Capital Cuenta No.3_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 2
+  },
+  {
+   "f": "Forma Pago Capital Cuenta No.4_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 3
+  },
+  {
+   "f": "Forma Pago Capital Cuenta No.5_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 4
+  },
+  {
+   "f": "Forma Pago Capital Cuenta No.6_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 5
+  },
+  {
+   "f": "Forma Pago Capital Cuenta No.7_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 6
+  },
+  {
+   "f": "Forma Pago Capital Cuenta No.8_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 7
+  },
+  {
+   "f": "Forma Pago Capital Cuenta No.9_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 8
+  },
+  {
+   "f": "Forma Pago Capital Cuenta No.10_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 9
+  },
+  {
+   "f": "Forma Pago Capital Cuenta No.11_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 10
+  },
+  {
+   "f": "Forma Pago Capital Cuenta No.12_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 11
+  },
+  {
+   "f": "Forma Pago Capital Cuenta No.13_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 12
+  },
+  {
+   "f": "Forma Pago Capital Cuenta No.14_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 13
+  },
+  {
+   "f": "Forma Pago Capital Cuenta No.15_Información_general",
+   "k": "ch",
+   "key": "cta_numero",
+   "i": 14
+  }
+ ],
+ "colte_cdt": [
+  {
+   "f": "Tipo de Cuenta_Retiro_Total",
+   "k": "t",
+   "key": "cta_tipo_txt"
+  },
+  {
+   "f": "No De Cuenta_Retiro_Total",
+   "k": "t",
+   "key": "cta_numero"
+  },
+  {
+   "f": "Titular Cuenta_Retiro_Total",
+   "k": "t",
+   "key": "cta_titular"
+  }
+ ],
+ "juris": [
+  {
+   "f": "Tipo Cuenta Ahorros_Ahorro_inversión",
+   "k": "c",
+   "key": "cta_tipo",
+   "val": "ahorros"
+  },
+  {
+   "f": "Tipo Cuenta Corriente_Ahorro_inversión",
+   "k": "c",
+   "key": "cta_tipo",
+   "val": "corriente"
+  },
+  {
+   "f": "Entidad de la Cuenta Debitar_Ahorro_inversión",
+   "k": "t",
+   "key": "cta_banco"
+  },
+  {
+   "f": "Número de Cuenta_Ahorro_inversión",
+   "k": "t",
+   "key": "cta_numero"
+  }
+ ],
+ "mmujer": []
+}

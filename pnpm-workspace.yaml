@@ -1,0 +1,12 @@
+# Ajustes de pnpm 12 para este proyecto (un solo paquete, sin "packages:").
+# pnpm 12 rechaza claves desconocidas en este archivo: aquí solo va allowBuilds.
+# false = no ejecutar el script de instalación del paquete; sus binarios llegan por
+# optionalDependencies y funcionan sin él.
+# Si `pnpm install` termina con ERR_PNPM_IGNORED_BUILDS, añade aquí con `false` el paquete
+# que nombra el error (léelo del mensaje; no uses dangerouslyAllowAllBuilds).
+allowBuilds:
+  "@biomejs/biome": false
+  "@tailwindcss/oxide": false
+  esbuild: false
+  sharp: false
+  unrs-resolver: false

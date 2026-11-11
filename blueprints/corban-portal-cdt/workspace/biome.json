@@ -1,0 +1,60 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.6.4/schema.json",
+  "root": true,
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "**",
+      "!!**/blueprints",
+      "!!**/node_modules",
+      "!!**/.next",
+      "!!**/.data",
+      "!!**/coverage",
+      "!!**/playwright-report",
+      "!!**/test-results",
+      "!**/drizzle",
+      "!**/docs",
+      "!**/assets",
+      "!**/.claude",
+      "!**/__snapshots__",
+      "!**/*.svg",
+      "!**/*.md",
+      "!**/*.yml",
+      "!**/*.yaml",
+      "!tsconfig.json",
+      "!next-env.d.ts"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true
+    }
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "off"
+      }
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["src/components/ui/**"],
+      "linter": {
+        "enabled": false
+      }
+    }
+  ]
+}

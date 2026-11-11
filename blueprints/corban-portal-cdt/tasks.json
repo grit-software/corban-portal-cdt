@@ -1,0 +1,648 @@
+[
+  {
+    "id": "E1-T1",
+    "title": "Andamiaje y cadena de herramientas",
+    "epic": "01-fundaciones",
+    "dependencies": [],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `pnpm lint` se ejecuta desde la raíz con el bundle presente en `blueprints/corban-portal-cdt/` THE SYSTEM SHALL terminar con código 0.",
+      "WHEN `pnpm typecheck` se ejecuta THE SYSTEM SHALL terminar con código 0 sin errores.",
+      "WHEN `pnpm test` se ejecuta THE SYSTEM SHALL pasar `tests/unit/health.test.ts` con 0 pruebas fallidas y terminar con código 0.",
+      "WHEN `pnpm build` se ejecuta THE SYSTEM SHALL terminar con código 0 y producir `.next/standalone/server.js`.",
+      "WHEN `sh scripts/smoke-standalone.sh` arranca `.next/standalone/server.js` en el puerto 3100 y pide `GET /api/health` THE SYSTEM SHALL responder 200 con un cuerpo JSON cuyo campo `status` vale `ok`."
+    ],
+    "verify": [
+      "pnpm lint",
+      "pnpm typecheck",
+      "pnpm test",
+      "pnpm build",
+      "test -f .next/standalone/server.js",
+      "sh scripts/smoke-standalone.sh /api/health '\"status\":\"ok\"'"
+    ],
+    "checkpoint": "step-01-andamiaje",
+    "files": ["README.md", "pnpm-lock.yaml"],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T2",
+    "title": "Servicios locales, entorno y cliente de BD",
+    "epic": "01-fundaciones",
+    "dependencies": ["E1-T1"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `docker compose up -d --wait postgres` se ejecuta THE SYSTEM SHALL terminar con código 0 solo después de que el healthcheck `pg_isready` del servicio `postgres` reporte saludable.",
+      "WHEN `pnpm db:migrate` se ejecuta dos veces seguidas contra `DATABASE_URL` THE SYSTEM SHALL terminar con código 0 ambas veces y la tabla `festivos` SHALL existir.",
+      "WHEN `pnpm db:test:prepare` se ejecuta THE SYSTEM SHALL recrear la base `corban_test` con todas las migraciones aplicadas y terminar con código 0.",
+      "WHEN `pnpm test tests/integration/db.test.ts` se ejecuta THE SYSTEM SHALL ejecutar `select 1` mediante `getDb()` contra `corban_test`, insertar y leer una fila de `festivos`, y terminar con código 0.",
+      "WHEN `DATABASE_URL` no está definida y se llama `getEnv()` THE SYSTEM SHALL lanzar un error cuyo mensaje nombra `DATABASE_URL`.",
+      "WHEN el servidor standalone construido por `pnpm build` recibe `GET /api/health/db` THE SYSTEM SHALL responder 200 con un cuerpo JSON cuyo campo `db` vale `ok`."
+    ],
+    "verify": [
+      "docker compose up -d --wait postgres",
+      "pnpm db:migrate",
+      "pnpm db:migrate",
+      "docker compose exec -T postgres psql -U corban -d corban -tAc \"select to_regclass('public.festivos') is not null\" | grep -qx t",
+      "pnpm db:test:prepare",
+      "pnpm test tests/integration/db.test.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build",
+      "sh scripts/smoke-standalone.sh /api/health/db '\"db\":\"ok\"'"
+    ],
+    "checkpoint": "step-02-base-datos",
+    "files": [
+      "src/server/db/schema.ts",
+      "src/server/db/client.ts",
+      "src/app/api/health/db/route.ts",
+      "tests/integration/db.test.ts",
+      "drizzle/**"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T3",
+    "title": "Esquema completo, auditoría inmutable y semilla",
+    "epic": "01-fundaciones",
+    "dependencies": ["E1-T2"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `pnpm db:migrate` se ejecuta sobre la base del paso 2 THE SYSTEM SHALL terminar con código 0 y cada tabla exportada por `src/server/db/schema.ts` SHALL existir en `corban_test` después de `pnpm db:test:prepare`.",
+      "WHEN se intenta `UPDATE`, `DELETE` o `TRUNCATE` sobre `audit_events` THE SYSTEM SHALL fallar con el código SQLSTATE `42501` y dejar la fila sin cambios.",
+      "WHEN `pnpm db:seed` se ejecuta dos veces THE SYSTEM SHALL terminar con código 0 ambas veces y dejar exactamente 4 filas en `entidades` (`ban100`, `colte`, `juris`, `mmujer`) y exactamente una fila activa en `staff_members` con rol `admin` para `ADMIN_EMAIL`.",
+      "WHEN se insertan dos `clientes` con el mismo par (`tipo_doc`, `num_doc`) THE SYSTEM SHALL rechazar el segundo con violación de unicidad (SQLSTATE `23505`).",
+      "WHEN se inserta una solicitud sin `codigo` THE SYSTEM SHALL asignarle un código que cumple `^SOL-\\d{6}$`."
+    ],
+    "verify": [
+      "docker compose up -d --wait postgres",
+      "pnpm db:migrate",
+      "pnpm db:seed",
+      "pnpm db:seed",
+      "docker compose exec -T postgres psql -U corban -d corban -tAc \"select count(*) from entidades\" | grep -qx 4",
+      "pnpm db:test:prepare",
+      "pnpm test tests/integration/esquema.test.ts",
+      "pnpm typecheck",
+      "pnpm lint"
+    ],
+    "checkpoint": "step-03-esquema",
+    "files": [
+      "src/server/db/schema.ts",
+      "src/server/db/seed-base.ts",
+      "scripts/seed.ts",
+      "tests/integration/esquema.test.ts",
+      "drizzle/**"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T4",
+    "title": "Autorización can(), auditoría transaccional y logger",
+    "epic": "01-fundaciones",
+    "dependencies": ["E1-T3"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `pnpm test tests/unit/authz.test.ts` se ejecuta THE SYSTEM SHALL comparar `can()` contra la tabla esperada de la prueba, que reproduce celda por celda la matriz rol × acción de §8, y terminar con código 0.",
+      "WHEN un actor asesor llama `can()` con la acción `solicitud.ver` sobre un recurso cuyo `asesorId` es otro THE SYSTEM SHALL devolver `false`, y WHEN un cliente lo hace sobre un recurso cuyo `clienteId` no es el suyo THE SYSTEM SHALL devolver `false`.",
+      "WHEN una mutación ejecutada con `conAuditoria()` lanza un error después de escribir THE SYSTEM SHALL revertir tanto la mutación como la fila de `audit_events`.",
+      "WHEN una mutación ejecutada con `conAuditoria()` termina bien THE SYSTEM SHALL dejar exactamente una fila en `audit_events` con `accion`, `actor_id`, `target_type`, `target_id` y `metadata` del evento.",
+      "WHEN el logger recibe un objeto con las claves `num_doc`, `email`, `celular` o `cta_numero` en cualquier nivel de anidación THE SYSTEM SHALL emitir una línea JSON donde esos valores son `[REDACTADO]`."
+    ],
+    "verify": [
+      "docker compose up -d --wait postgres",
+      "pnpm db:test:prepare",
+      "pnpm test tests/unit/authz.test.ts",
+      "pnpm test tests/integration/trazabilidad.test.ts",
+      "pnpm typecheck",
+      "pnpm lint"
+    ],
+    "checkpoint": "step-04-autorizacion",
+    "files": [
+      "src/server/authz/**",
+      "src/server/auditoria/**",
+      "src/lib/logger.ts",
+      "tests/unit/authz.test.ts",
+      "tests/integration/trazabilidad.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T5",
+    "title": "Autenticación del staff (Entra, lista blanca, test-login)",
+    "epic": "01-fundaciones",
+    "dependencies": ["E1-T4"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `iniciarSesionPorOtp()` se usa con el correo de un `staff_members` activo THE SYSTEM SHALL crear una sesión y `getActor()` SHALL devolver un actor staff con el rol de esa fila.",
+      "WHEN `antesDeCrearSesion()` evalúa la sesión de un usuario con cuenta del proveedor `microsoft` cuyo correo no es un `staff_members` activo THE SYSTEM SHALL devolver `false` y no se crea sesión.",
+      "WHEN un administrador desactiva a un miembro del staff con `desactivarStaff()` THE SYSTEM SHALL borrar sus sesiones y `getActor()` con la cookie anterior SHALL devolver `null`.",
+      "WHEN `POST /api/test/login` recibe el correo de un staff activo con `AUTH_TEST_LOGIN` en 1 y `NODE_ENV` distinto de `production` THE SYSTEM SHALL responder 200 con una cabecera `set-cookie` de sesión; WHEN el correo no es de un staff activo THE SYSTEM SHALL responder 404.",
+      "WHEN `getAuth()` se inicializa sin `BETTER_AUTH_SECRET` o con menos de 32 caracteres THE SYSTEM SHALL lanzar un error que nombra `BETTER_AUTH_SECRET`.",
+      "WHEN faltan `ENTRA_CLIENT_ID`, `ENTRA_CLIENT_SECRET` o `ENTRA_TENANT_ID` THE SYSTEM SHALL arrancar sin el proveedor `microsoft` registrado, sin fallar."
+    ],
+    "verify": [
+      "docker compose up -d --wait postgres",
+      "pnpm db:test:prepare",
+      "pnpm test tests/integration/auth-staff.test.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build"
+    ],
+    "checkpoint": "step-05-auth-staff",
+    "files": [
+      "src/server/auth/**",
+      "src/server/correo/**",
+      "src/app/api/auth/[...all]/route.ts",
+      "src/app/api/test/login/route.ts",
+      "tests/integration/auth-staff.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T6",
+    "title": "Autenticación de clientes: registro, OTP e invitaciones",
+    "epic": "01-fundaciones",
+    "dependencies": ["E1-T5"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `POST /api/v1/auth/registro` recibe un cuerpo válido THE SYSTEM SHALL crear una fila en `clientes` con `user_id` nulo y responder 201; WHEN el par (`tipo_doc`, `num_doc`) ya existe con otro correo THE SYSTEM SHALL responder 409 con código `DOCUMENTO_REGISTRADO`.",
+      "WHEN `POST /api/auth/email-otp/send-verification-otp` se llama por sexta vez para el mismo correo dentro de 15 minutos THE SYSTEM SHALL responder 429 con código `LIMITE_EXCEDIDO` y no escribir archivo de correo.",
+      "WHEN se envía a `POST /api/auth/sign-in/email-otp` el código de 6 dígitos leído del archivo de correo THE SYSTEM SHALL crear una sesión y enlazar `clientes.user_id` del cliente con ese correo; WHEN el código es incorrecto THE SYSTEM SHALL responder con estado 4xx y no crear sesión.",
+      "WHEN un cliente con sesión acepta una invitación vigente THE SYSTEM SHALL fijar `invitaciones.accepted_at` y `clientes.asesor_id` al asesor que invitó; WHEN la misma invitación se acepta otra vez o tiene más de 7 días THE SYSTEM SHALL responder 410 con código `INVITACION_INVALIDA`.",
+      "WHEN un cliente con sesión llama `POST /api/v1/consentimiento` THE SYSTEM SHALL guardar una fila en `consentimientos` con `version`, `accepted_at`, `ip` y `user_agent`, y `GET /api/v1/consentimiento` SHALL devolver `aceptado` en `true`.",
+      "WHEN un correo de staff pide un OTP por HTTP THE SYSTEM SHALL responder 403 con código `USAR_MICROSOFT`."
+    ],
+    "verify": [
+      "docker compose up -d --wait postgres",
+      "pnpm db:test:prepare",
+      "pnpm test tests/integration/auth-clientes.test.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build"
+    ],
+    "checkpoint": "step-06-auth-clientes",
+    "files": [
+      "src/server/clientes/acceso/**",
+      "src/app/api/v1/**",
+      "src/app/(publico)/**",
+      "src/proxy.ts",
+      "tests/integration/auth-clientes.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E1-T7",
+    "title": "Condiciones de tasa, festivos y motor de cálculo",
+    "epic": "01-fundaciones",
+    "dependencies": ["E1-T6"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `pnpm test tests/unit/motor-calculo.test.ts` se ejecuta THE SYSTEM SHALL pasar los 7 casos de vencimiento (calendario y comercial 360, ajuste siguiente y anterior hábil con sábados, domingos y festivos), los de `plazoMeses` y los de `valorEnLetras` de la tabla de fixtures del paso 7, y terminar con código 0.",
+      "WHEN ninguna fila de `condiciones_tasa` aplica a la entidad, valor, plazo, periodicidad y fecha de apertura THE SYSTEM SHALL devolver el error `SIN_CONDICION`; WHEN aplican dos o más THE SYSTEM SHALL devolver `CONDICION_AMBIGUA`.",
+      "WHEN el valor es menor que `entidades.monto_minimo` THE SYSTEM SHALL devolver el error `MONTO_MINIMO`.",
+      "WHEN el coordinador guarda una condición cuyo rango de monto y vigencia se cruzan con otra de la misma entidad, plazo y periodicidad THE SYSTEM SHALL rechazarla con `CONDICION_SOLAPADA` y no escribir filas.",
+      "WHEN un asesor intenta crear o editar una condición o un festivo THE SYSTEM SHALL lanzar `PROHIBIDO` sin escribir filas; WHEN lo hace el coordinador THE SYSTEM SHALL escribir la fila y una fila de `audit_events`.",
+      "WHEN se consulta `opcionesPara()` para una entidad y un valor THE SYSTEM SHALL devolver solo los plazos y periodicidades con condición vigente hoy, cada periodicidad con su `tasaEa`."
+    ],
+    "verify": [
+      "docker compose up -d --wait postgres",
+      "pnpm db:test:prepare",
+      "pnpm test tests/unit/motor-calculo.test.ts",
+      "pnpm test tests/integration/condiciones.test.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build"
+    ],
+    "checkpoint": "step-07-condiciones",
+    "files": [
+      "src/server/condiciones/**",
+      "src/app/(staff)/coordinador/**",
+      "tests/helpers/fabricas.ts",
+      "tests/unit/motor-calculo.test.ts",
+      "tests/integration/condiciones.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T1",
+    "title": "Sistema de diseño y shells",
+    "epic": "02-solicitudes",
+    "dependencies": ["E1-T6", "E1-T7"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `pnpm test tests/unit/contraste.test.ts` se ejecuta THE SYSTEM SHALL leer los colores de `src/app/globals.css` y comprobar que cada par texto/fondo de la lista de la prueba tiene contraste WCAG de al menos 4.5, terminando con código 0.",
+      "WHEN `pnpm e2e tests/e2e/responsive.spec.ts` se ejecuta a 375, 768 y 1440 px de ancho THE SYSTEM SHALL comprobar `scrollWidth <= clientWidth` del elemento raíz en `/`, `/ingreso`, `/registro`, `/ingreso-staff` y `/coordinador/condiciones` con sesión de coordinador obtenida por `/api/test/login`.",
+      "WHEN se renderiza cualquiera de esas páginas THE SYSTEM SHALL tener `lang` en `es-CO` en el elemento `html`, un único `h1` y el enlace «Saltar al contenido» como primer elemento enfocable.",
+      "WHEN un visitante sin sesión pide `/mi-cuenta` o `/asesor` THE SYSTEM SHALL redirigirlo a `/ingreso` o a `/ingreso-staff` respectivamente.",
+      "WHEN `pnpm build` se ejecuta THE SYSTEM SHALL terminar con código 0 con `src/app/layout.tsx` cargando Inter y Poppins mediante `next/font/local` con la opción `display` en `swap`."
+    ],
+    "verify": [
+      "pnpm exec playwright install chromium",
+      "docker compose up -d --wait postgres",
+      "pnpm test tests/unit/contraste.test.ts",
+      "pnpm e2e tests/e2e/responsive.spec.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build",
+      "grep -q 'display: \"swap\"' src/app/layout.tsx"
+    ],
+    "checkpoint": "step-08-diseno",
+    "files": [
+      "src/app/globals.css",
+      "src/app/**/layout.tsx",
+      "src/components/**",
+      "tests/unit/contraste.test.ts",
+      "tests/e2e/responsive.spec.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T2",
+    "title": "API v1 del cliente: perfil, solicitudes y envío",
+    "epic": "02-solicitudes",
+    "dependencies": ["E1-T6", "E1-T7"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN un cliente con consentimiento hace `POST /api/v1/solicitudes` con un `entidadId` válido THE SYSTEM SHALL responder 201 con `data.estado` en `borrador`, `data.codigo` que cumple `^SOL-\\d{6}$` y `datos` precargados desde `clientes.perfil`.",
+      "WHEN `PATCH /api/v1/solicitudes/{id}` recibe `paso` y `datos` de un borrador propio THE SYSTEM SHALL fusionar solo las claves de ese paso, validarlas con su esquema zod y responder 200; WHEN la solicitud no está en `borrador` ni `devuelta` THE SYSTEM SHALL responder 409 con código `TRANSICION_INVALIDA`.",
+      "WHEN `POST /api/v1/solicitudes/{id}/enviar` se llama con campos obligatorios vacíos THE SYSTEM SHALL responder 422 con código `VALIDACION` y `fields` listando cada clave faltante, sin cambiar el estado.",
+      "WHEN el envío es válido pero el motor no encuentra condición aplicable THE SYSTEM SHALL responder 422 con código `SIN_CONDICION`; WHEN es válido y hay condición THE SYSTEM SHALL pasar a `pendiente_validacion` y escribir un `solicitud_eventos` y un `audit_events`.",
+      "WHEN el cliente A pide `GET /api/v1/solicitudes/{id}` de una solicitud del cliente B THE SYSTEM SHALL responder 404 con código `NO_ENCONTRADO`, y WHEN un asesor no asignado llama `obtenerSolicitud()` sobre ella THE SYSTEM SHALL lanzar `NO_ENCONTRADO`.",
+      "WHEN un cliente sin consentimiento llama cualquier ruta `/api/v1/solicitudes` THE SYSTEM SHALL responder 403 con código `CONSENTIMIENTO_REQUERIDO`."
+    ],
+    "verify": [
+      "docker compose up -d --wait postgres",
+      "pnpm db:test:prepare",
+      "pnpm test tests/integration/api-v1.test.ts",
+      "pnpm test tests/integration/aislamiento.test.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build"
+    ],
+    "checkpoint": "step-09-api-v1",
+    "files": [
+      "src/server/solicitudes/**",
+      "src/lib/datos/**",
+      "src/app/api/v1/**",
+      "tests/integration/api-v1.test.ts",
+      "tests/integration/aislamiento.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T3",
+    "title": "Asistente del cliente (mobile-first)",
+    "epic": "02-solicitudes",
+    "dependencies": ["E2-T1", "E2-T2"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN un cliente de prueba completa los pasos CDT → personal → laboral → financiera → pago de intereses y cuenta → resumen y pulsa «Enviar a validación» THE SYSTEM SHALL mostrar el estado «Pendiente de validación» en `/mi-cuenta/solicitudes/{id}`.",
+      "WHEN el cliente recarga la página a mitad del asistente THE SYSTEM SHALL restaurar todos los valores guardados por el autoguardado del paso anterior.",
+      "WHEN un campo obligatorio está vacío y el cliente pulsa «Siguiente» THE SYSTEM SHALL permanecer en el paso, mostrar el error en texto junto al campo y mover el foco al primer campo inválido.",
+      "WHEN se muestra el paso de pago de intereses THE SYSTEM SHALL listar solo las periodicidades que `GET /api/v1/condiciones/opciones` devuelve para la entidad, plazo y valor elegidos, cada una con su tasa E.A.",
+      "WHEN `pnpm e2e tests/e2e/responsive.spec.ts` se ejecuta THE SYSTEM SHALL no reportar desbordamiento horizontal en `/mi-cuenta` ni en `/mi-cuenta/solicitudes/nueva` a 375, 768 y 1440 px."
+    ],
+    "verify": [
+      "pnpm exec playwright install chromium",
+      "docker compose up -d --wait postgres",
+      "pnpm e2e tests/e2e/asistente.spec.ts",
+      "pnpm e2e tests/e2e/responsive.spec.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build"
+    ],
+    "checkpoint": "step-10-asistente",
+    "files": [
+      "src/app/(cliente)/mi-cuenta/**",
+      "src/components/cliente/**",
+      "tests/e2e/apoyo.ts",
+      "tests/e2e/asistente.spec.ts",
+      "tests/e2e/responsive.spec.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T4",
+    "title": "Motor PDF y pruebas golden de los 6 formatos",
+    "epic": "02-solicitudes",
+    "dependencies": ["E1-T7", "E2-T2"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `pnpm test tests/unit/pdf-golden.test.ts` se ejecuta THE SYSTEM SHALL generar los 6 documentos `ban_vinc`, `ban_orden`, `colte_vinc`, `colte_cdt`, `juris` y `mmujer` con `tests/fixtures/cliente-ejemplo.json` y el reporte de cada uno SHALL tener `notFound` vacío.",
+      "WHEN cada PDF generado se vuelve a abrir con pdf-lib THE SYSTEM SHALL producir un JSON de todos los campos mapeados con su valor o marca idéntico al snapshot commiteado en `tests/unit/__snapshots__/pdf-<docKey>.json`.",
+      "WHEN se inspeccionan los campos que no aparecen en ningún mapeo de ese documento THE SYSTEM SHALL encontrarlos vacíos: texto vacío, casilla sin marcar y radio sin selección.",
+      "WHEN se inspeccionan los widgets de cada campo de texto después de generar THE SYSTEM SHALL no encontrar dos widgets del mismo campo con rectángulos a menos de 3 pt entre sí.",
+      "WHEN una fila de mapeo de tipo `ch` pide el índice 2 de `cta_numero` igual a `12345678901` THE SYSTEM SHALL escribir `3`, y WHEN el índice está fuera de rango THE SYSTEM SHALL dejar el campo vacío.",
+      "WHEN una fila de tipo `c` compara `soltero` con `Soltera` o `si` con `Sí` THE SYSTEM SHALL marcar la casilla, porque la comparación ignora mayúsculas y tildes y trata la `o` final como `a`."
+    ],
+    "verify": [
+      "pnpm test tests/unit/pdf-mapeo.test.ts",
+      "pnpm test tests/unit/pdf-golden.test.ts",
+      "pnpm test tests/unit/pdf-golden.test.ts",
+      "test -f tests/unit/__snapshots__/pdf-ban_vinc.json",
+      "test -f tests/unit/__snapshots__/pdf-ban_orden.json",
+      "test -f tests/unit/__snapshots__/pdf-colte_vinc.json",
+      "test -f tests/unit/__snapshots__/pdf-colte_cdt.json",
+      "test -f tests/unit/__snapshots__/pdf-juris.json",
+      "test -f tests/unit/__snapshots__/pdf-mmujer.json",
+      "pnpm typecheck",
+      "pnpm lint"
+    ],
+    "checkpoint": "step-11-motor-pdf",
+    "files": [
+      "src/server/pdf/**",
+      "tests/fixtures/cliente-ejemplo.json",
+      "tests/unit/pdf-mapeo.test.ts",
+      "tests/unit/pdf-golden.test.ts",
+      "tests/unit/__snapshots__/**"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T5",
+    "title": "Máquina de estados, validación y PDFs versionados",
+    "epic": "02-solicitudes",
+    "dependencies": ["E2-T2", "E2-T4"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `pnpm test tests/integration/estados.test.ts` se ejecuta THE SYSTEM SHALL comprobar cada fila de la tabla de transiciones (estado origen, acción, rol) y que toda combinación fuera de la tabla responde `TRANSICION_INVALIDA` (409) sin escribir filas.",
+      "WHEN el asesor asignado aprueba una solicitud en `pendiente_validacion` THE SYSTEM SHALL, en una transacción, copiar `valor`, `plazo_dias`, `periodicidad`, `tasa_ea`, `fecha_apertura`, `fecha_venc` y `condicion_id` a la solicitud, crear `solicitud_versiones` número 1, guardar un PDF por cada `doc_key` de la entidad con `version` 1 y `sha256`, y pasar a `pendiente_firma`.",
+      "WHEN el asesor devuelve sin observación THE SYSTEM SHALL responder 422 con código `MOTIVO_REQUERIDO` y conservar el estado.",
+      "WHEN el cliente dueño pide `GET /api/v1/solicitudes/{id}/documentos/{docId}` THE SYSTEM SHALL responder 200 `application/pdf` cuyos bytes tienen el `sha256` guardado; WHEN lo pide otro cliente THE SYSTEM SHALL responder 404.",
+      "WHEN cualquier transición se completa THE SYSTEM SHALL escribir exactamente una fila en `solicitud_eventos` y una en `audit_events` con `accion` igual a `solicitud.` seguido del nombre de la acción.",
+      "WHEN el driver de almacenamiento `fs` guarda un archivo THE SYSTEM SHALL escribirlo bajo `STORAGE_FS_ROOT` y `get()` SHALL devolver los mismos bytes, sin escribir nada bajo `public/`."
+    ],
+    "verify": [
+      "docker compose up -d --wait postgres",
+      "pnpm db:test:prepare",
+      "pnpm test tests/integration/estados.test.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build"
+    ],
+    "checkpoint": "step-12-validacion",
+    "files": [
+      "src/server/solicitudes/**",
+      "src/server/almacenamiento/**",
+      "src/app/api/staff/solicitudes/**",
+      "src/app/api/v1/solicitudes/**",
+      "tests/integration/estados.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T6",
+    "title": "Carga del documento firmado y revisión",
+    "epic": "02-solicitudes",
+    "dependencies": ["E2-T3", "E2-T5"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN el cliente dueño sube 2 imágenes PNG a `POST /api/v1/solicitudes/{id}/firmados` en `pendiente_firma` THE SYSTEM SHALL guardar un único PDF de 2 páginas A4 como documento tipo `firmado` y pasar la solicitud a `firma_en_revision`.",
+      "WHEN un archivo no empieza por `%PDF-`, `FF D8 FF` ni la firma PNG, aunque declare un MIME permitido, THE SYSTEM SHALL responder 415 con código `TIPO_NO_PERMITIDO` y no guardar nada.",
+      "WHEN llegan más de 10 archivos o más de 15 MB en total THE SYSTEM SHALL responder 413 con código `CARGA_DEMASIADO_GRANDE`.",
+      "WHEN el asesor acepta el firmado THE SYSTEM SHALL marcarlo `aceptado` y pasar a `lista_para_enviar`; WHEN lo rechaza con motivo THE SYSTEM SHALL marcarlo `rechazado` con `motivo_rechazo` y volver a `pendiente_firma`.",
+      "WHEN el asesor rechaza sin motivo THE SYSTEM SHALL responder 422 con código `MOTIVO_REQUERIDO`."
+    ],
+    "verify": [
+      "docker compose up -d --wait postgres",
+      "pnpm db:test:prepare",
+      "pnpm test tests/integration/firmas.test.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build"
+    ],
+    "checkpoint": "step-13-firmas",
+    "files": [
+      "src/server/firmas/**",
+      "src/app/api/v1/solicitudes/**",
+      "src/app/api/staff/solicitudes/**",
+      "src/components/cliente/**",
+      "tests/integration/firmas.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E2-T7",
+    "title": "Espacio de trabajo del asesor",
+    "epic": "02-solicitudes",
+    "dependencies": ["E2-T6"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN un asesor abre la bandeja THE SYSTEM SHALL listar primero las solicitudes de sus clientes en `pendiente_validacion` y `firma_en_revision`, paginadas en el servidor de a 25.",
+      "WHEN el listado recibe `q` con un código, un nombre o un número de documento THE SYSTEM SHALL devolver solo las filas que coinciden, y con 60 solicitudes sembradas en la prueba SHALL devolver páginas de 25, 25 y 10 filas.",
+      "WHEN un asesor edita con motivo una solicitud en `firma_en_revision` THE SYSTEM SHALL crear `solicitud_versiones` número N+1, regenerar los PDF con versión N+1, marcar `desactualizado` el firmado anterior, pasar a `pendiente_firma` y guardar en `audit_events.metadata` los cambios con `campo`, `antes` y `despues`.",
+      "WHEN la edición llega sin motivo THE SYSTEM SHALL lanzar `MOTIVO_REQUERIDO` y no cambiar nada.",
+      "WHEN el coordinador reasigna un cliente a otro asesor THE SYSTEM SHALL actualizar `clientes.asesor_id` y el `asesor_id` de sus solicitudes no finales, y el asesor anterior SHALL recibir `NO_ENCONTRADO` al pedirlas; WHEN un asesor intenta reasignar THE SYSTEM SHALL lanzar `PROHIBIDO`.",
+      "WHEN la condición congelada de una solicitud en `pendiente_firma`, `firma_en_revision` o `lista_para_enviar` tiene `vigente_hasta` anterior a hoy THE SYSTEM SHALL devolver `alertaVigencia` en `true` en el detalle del asesor."
+    ],
+    "verify": [
+      "docker compose up -d --wait postgres",
+      "pnpm db:test:prepare",
+      "pnpm test tests/integration/asesor.test.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build"
+    ],
+    "checkpoint": "step-14-asesor",
+    "files": [
+      "src/server/solicitudes/**",
+      "src/app/(staff)/asesor/**",
+      "src/components/staff/**",
+      "tests/integration/asesor.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T1",
+    "title": "Envío a la entidad, constitución y portafolio",
+    "epic": "03-operacion",
+    "dependencies": ["E2-T7"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN el asesor constituye una solicitud en `enviada_entidad` con `numero_cdt`, `valor`, `tasa_ea`, `fecha_apertura` y `fecha_venc` finales THE SYSTEM SHALL pasarla a `cdt_constituido`, fijar `constituida_at` y crear exactamente una fila en `cdts` con `origen` en `solicitud`.",
+      "WHEN se intenta constituir con un `numero_cdt` que ya existe para esa entidad THE SYSTEM SHALL responder `CONFLICTO` (409), dejar una sola fila en `cdts` y la solicitud en `enviada_entidad`.",
+      "WHEN el cliente dueño llama `GET /api/v1/portafolio` THE SYSTEM SHALL devolver sus CDT vigentes, `totalInvertido` igual a la suma de su `valor` y `proximosVencimientos` en orden ascendente de `fecha_venc`, sin CDT de otros clientes.",
+      "WHEN un CDT tiene `fecha_venc` anterior a hoy THE SYSTEM SHALL excluirlo de los vigentes del portafolio aunque su `estado` sea `vigente`.",
+      "WHEN se intenta cancelar una solicitud en `cdt_constituido` THE SYSTEM SHALL responder `TRANSICION_INVALIDA` (409)."
+    ],
+    "verify": [
+      "docker compose up -d --wait postgres",
+      "pnpm db:test:prepare",
+      "pnpm test tests/integration/portafolio.test.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build"
+    ],
+    "checkpoint": "step-15-portafolio",
+    "files": [
+      "src/server/portafolio/**",
+      "src/app/(staff)/asesor/**",
+      "src/app/(cliente)/mi-cuenta/**",
+      "src/app/api/v1/**",
+      "tests/integration/portafolio.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T2",
+    "title": "Importación desde Excel",
+    "epic": "03-operacion",
+    "dependencies": ["E3-T1"],
+    "priority": "p1",
+    "acceptance": [
+      "WHEN se previsualiza un .xlsx con un perfil de mapeo guardado THE SYSTEM SHALL devolver como máximo 50 filas, cada una con sus errores: fecha inválida (se aceptan dd/mm/yyyy, yyyy-mm-dd y serial de Excel), entidad desconocida y documento vacío.",
+      "WHEN se confirma la importación THE SYSTEM SHALL hacer upsert de `clientes` por (`tipo_doc`, `num_doc`) y de `cdts` por (`entidad_id`, `numero_cdt`) en una transacción por bloque de 200 filas y escribir una fila en `import_cargas` con creadas, actualizadas, sin cambios y rechazadas.",
+      "WHEN el mismo archivo se importa por segunda vez THE SYSTEM SHALL reportar 0 creadas y 0 actualizadas y no cambiar ningún valor en `clientes` ni en `cdts`.",
+      "WHEN hay filas rechazadas THE SYSTEM SHALL guardar un .xlsx de rechazos con las columnas originales más la columna `motivo` y permitir descargarlo.",
+      "WHEN un cliente importado inicia una nueva solicitud THE SYSTEM SHALL precargar `datos` con las claves de `clientes.perfil` que trajo la importación.",
+      "WHEN un asesor llama las rutas de importación THE SYSTEM SHALL responder 403 con código `PROHIBIDO`."
+    ],
+    "verify": [
+      "docker compose up -d --wait postgres",
+      "pnpm db:test:prepare",
+      "pnpm test tests/integration/importacion.test.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build"
+    ],
+    "checkpoint": "step-16-importacion",
+    "files": [
+      "src/server/importacion/**",
+      "src/app/(staff)/coordinador/importar/**",
+      "src/app/api/staff/importaciones/**",
+      "tests/integration/importacion.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T3",
+    "title": "Reportes de gerencia y exportación",
+    "epic": "03-operacion",
+    "dependencies": ["E3-T1"],
+    "priority": "p1",
+    "acceptance": [
+      "WHEN se calcula el reporte de inversión THE SYSTEM SHALL devolver el total por entidad y por asesor igual a la suma SQL de `valor` de los `cdts` vigentes sembrados en la prueba.",
+      "WHEN se calcula el reporte de vencimientos a 30, 60 y 90 días THE SYSTEM SHALL listar solo CDT vigentes con `fecha_venc` dentro de cada ventana, en orden ascendente.",
+      "WHEN se calcula el resumen de solicitudes THE SYSTEM SHALL devolver el conteo por estado y el promedio de días entre `created_at` y `constituida_at` de las constituidas, respetando los filtros de fechas, entidad y asesor.",
+      "WHEN se pide `GET /api/staff/reportes/{reporte}/xlsx` THE SYSTEM SHALL responder un .xlsx cuya primera hoja, releída con exceljs, tiene la fila de encabezados y las filas de datos del reporte.",
+      "WHEN un cliente o un asesor pide un reporte THE SYSTEM SHALL responder 403 con código `PROHIBIDO`."
+    ],
+    "verify": [
+      "docker compose up -d --wait postgres",
+      "pnpm db:test:prepare",
+      "pnpm test tests/integration/reportes.test.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build"
+    ],
+    "checkpoint": "step-17-reportes",
+    "files": [
+      "src/server/reportes/**",
+      "src/app/(staff)/gerencia/**",
+      "src/app/api/staff/reportes/**",
+      "src/components/staff/**",
+      "tests/integration/reportes.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T4",
+    "title": "Notificaciones, PWA y administración del staff",
+    "epic": "03-operacion",
+    "dependencies": ["E3-T3"],
+    "priority": "p1",
+    "acceptance": [
+      "WHEN una solicitud pasa a `pendiente_validacion` THE SYSTEM SHALL enviar un correo al asesor asignado, o a los coordinadores si no tiene, y WHEN pasa a `pendiente_firma` o `devuelta` THE SYSTEM SHALL enviar un correo al cliente, cada uno con el código de la solicitud y un enlace a su detalle.",
+      "WHEN el envío de un correo falla THE SYSTEM SHALL conservar la transición, registrar el error en el log sin datos personales y dejar `solicitud_eventos.notificado_at` en nulo.",
+      "WHEN `manifest()` se evalúa THE SYSTEM SHALL devolver `name` Corban CDT, `start_url` /mi-cuenta, `display` standalone e íconos de 192 y 512 px, y WHEN el servidor standalone recibe `GET /manifest.webmanifest` THE SYSTEM SHALL responder 200 con ese `start_url` en el cuerpo.",
+      "WHEN el servidor standalone recibe `GET /iconos/192` o `GET /iconos/512` THE SYSTEM SHALL responder 200 con una imagen PNG.",
+      "WHEN un admin crea, cambia de rol o desactiva un miembro del staff desde `/admin/staff` THE SYSTEM SHALL escribir la fila y un `audit_events`; WHEN lo intenta un coordinador THE SYSTEM SHALL lanzar `PROHIBIDO`."
+    ],
+    "verify": [
+      "docker compose up -d --wait postgres",
+      "pnpm db:test:prepare",
+      "pnpm test tests/integration/notificaciones.test.ts",
+      "pnpm typecheck",
+      "pnpm lint",
+      "pnpm build",
+      "sh scripts/smoke-standalone.sh /manifest.webmanifest /mi-cuenta",
+      "sh scripts/smoke-standalone.sh /iconos/192 PNG",
+      "sh scripts/smoke-standalone.sh /iconos/512 PNG"
+    ],
+    "checkpoint": "step-18-notificaciones",
+    "files": [
+      "src/server/solicitudes/notificaciones.ts",
+      "src/app/(staff)/admin/**",
+      "src/app/manifest.ts",
+      "src/app/iconos/[tamano]/route.tsx",
+      "tests/integration/notificaciones.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T5",
+    "title": "Endurecimiento y E2E de los 4 flujos",
+    "epic": "03-operacion",
+    "dependencies": ["E3-T2", "E3-T4"],
+    "priority": "p0",
+    "acceptance": [
+      "WHEN `pnpm e2e tests/e2e/flujos.spec.ts` se ejecuta THE SYSTEM SHALL pasar los 4 flujos: registro por OTP con consentimiento y envío; aprobación por el asesor con PDFs descargables por el cliente; carga de fotos firmadas, aceptación, envío y constitución visible en el portafolio; edición posterior a la aprobación que crea la versión 2, desactualiza el firmado y vuelve a `pendiente_firma`.",
+      "WHEN el servidor standalone de producción recibe `POST /api/test/login` THE SYSTEM SHALL responder 404 aunque `AUTH_TEST_LOGIN` valga 1.",
+      "WHEN se lee la configuración de `next.config.ts` THE SYSTEM SHALL declarar para todas las rutas `Content-Security-Policy` con `frame-ancestors 'none'`, `Strict-Transport-Security`, `X-Content-Type-Options` en `nosniff`, `Referrer-Policy` en `strict-origin-when-cross-origin`, `X-Frame-Options` en `DENY` y `Permissions-Policy`.",
+      "WHEN `pnpm e2e tests/e2e/responsive.spec.ts` se ejecuta THE SYSTEM SHALL no reportar desbordamiento horizontal en ninguna página principal de cliente y de staff a 375, 768 y 1440 px.",
+      "WHEN `POST /api/v1/auth/registro` se llama 11 veces desde la misma IP en 15 minutos THE SYSTEM SHALL responder 429 con código `LIMITE_EXCEDIDO` en la undécima."
+    ],
+    "verify": [
+      "pnpm exec playwright install chromium",
+      "docker compose up -d --wait postgres",
+      "pnpm db:test:prepare",
+      "pnpm test",
+      "pnpm test tests/integration/endurecimiento.test.ts",
+      "pnpm e2e tests/e2e/flujos.spec.ts",
+      "pnpm e2e tests/e2e/responsive.spec.ts",
+      "pnpm build",
+      "sh scripts/smoke-standalone.sh /api/test/login NO_ENCONTRADO 404 POST",
+      "status=0; grep -rnE '\\.(skip|only)\\(' tests || status=$?; test \"$status\" -eq 1",
+      "pnpm typecheck",
+      "pnpm lint"
+    ],
+    "checkpoint": "step-19-endurecimiento",
+    "files": [
+      "next.config.ts",
+      "tests/e2e/flujos.spec.ts",
+      "tests/e2e/responsive.spec.ts",
+      "tests/e2e/apoyo.ts",
+      "tests/integration/endurecimiento.test.ts"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "E3-T6",
+    "title": "Contenedor, CI y lista de lanzamiento",
+    "epic": "03-operacion",
+    "dependencies": ["E3-T5"],
+    "priority": "p1",
+    "acceptance": [
+      "WHEN `docker build -t corban-cdt:local .` se ejecuta THE SYSTEM SHALL terminar con código 0 usando la imagen base `node:24.22.2-bookworm-slim` y un usuario no root.",
+      "WHEN `sh scripts/smoke-docker.sh` arranca la imagen en el puerto 3300 THE SYSTEM SHALL responder `GET /api/health` con 200 y `status` en `ok`, y detener el contenedor.",
+      "WHEN `pnpm test tests/unit/ci.test.ts` se ejecuta THE SYSTEM SHALL confirmar que `.github/workflows/ci.yml` ejecuta `pnpm install --frozen-lockfile`, `pnpm exec biome ci .`, `pnpm typecheck`, `pnpm db:test:prepare`, `pnpm test`, `pnpm build` y `pnpm e2e` con un servicio `postgres:17-alpine`.",
+      "WHEN `pnpm test tests/unit/ci.test.ts` lee `.dockerignore` THE SYSTEM SHALL encontrar las exclusiones `blueprints`, `.env`, `.data`, `node_modules` y `.next`.",
+      "WHEN `pnpm test tests/unit/ci.test.ts` lee `docs/lanzamiento.md` THE SYSTEM SHALL encontrar el comando `az postgres flexible-server create` y el paso de release `pnpm db:migrate`."
+    ],
+    "verify": [
+      "pnpm test tests/unit/ci.test.ts",
+      "docker build -t corban-cdt:local .",
+      "sh scripts/smoke-docker.sh",
+      "pnpm typecheck",
+      "pnpm lint"
+    ],
+    "checkpoint": "step-20-contenedor-ci",
+    "files": [
+      "Dockerfile",
+      ".dockerignore",
+      "scripts/smoke-docker.sh",
+      "docs/lanzamiento.md",
+      "tests/unit/ci.test.ts"
+    ],
+    "status": "pending"
+  }
+]

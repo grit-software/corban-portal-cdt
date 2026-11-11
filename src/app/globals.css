@@ -1,0 +1,65 @@
+@import "tailwindcss";
+@source not "../../docs";
+@source not "../../blueprints";
+
+/*
+ * Tokens de marca de Corban FC. ÚNICO archivo a cambiar cuando el cliente entregue la paleta
+ * oficial y el logo en SVG. Solo modo claro en v1.
+ * El contraste de los pares texto/fondo lo verifica tests/unit/contraste.test.ts (paso 8).
+ * success (#2f9e5b) solo para íconos y bordes; para texto se usa success-strong (#1e7a45).
+ * input usa el gris muted para que el borde de los campos cumpla 3:1 sobre blanco.
+ */
+@theme {
+  --color-navy: #1d2226;
+  --color-navy-dark: #101317;
+  --color-primary: #2e6da4;
+  --color-primary-dark: #1f4e7a;
+  --color-primary-foreground: #ffffff;
+  --color-background: #f5f6f7;
+  --color-foreground: #1b1f23;
+  --color-card: #ffffff;
+  --color-card-foreground: #1b1f23;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #1b1f23;
+  --color-muted: #f5f6f7;
+  --color-muted-foreground: #6b7178;
+  --color-secondary: #e2e4e7;
+  --color-secondary-foreground: #1b1f23;
+  --color-accent: #f5f6f7;
+  --color-accent-foreground: #1b1f23;
+  --color-border: #e2e4e7;
+  --color-input: #6b7178;
+  --color-ring: #2e6da4;
+  --color-success: #2f9e5b;
+  --color-success-strong: #1e7a45;
+  --color-destructive: #c0402c;
+  --color-destructive-foreground: #ffffff;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --shadow-card: 0 1px 2px rgb(16 19 23 / 0.06);
+  --shadow-popover: 0 8px 24px rgb(16 19 23 / 0.12);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-poppins), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading);
+  }
+
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-border);
+  }
+}

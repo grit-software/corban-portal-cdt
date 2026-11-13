@@ -1,9 +1,19 @@
 import { expect, test } from "@playwright/test";
+import { correoE2E, registrarClienteYConsentir } from "./apoyo.ts";
 
 // Responsive y accesibilidad base de las páginas del sistema de diseño (E2-T1).
 // Las páginas de staff se miran con sesión de coordinador obtenida por /api/test/login.
 const ANCHOS = [375, 768, 1440];
 const PAGINAS = ["/", "/ingreso", "/registro", "/ingreso-staff", "/coordinador/condiciones"];
+
+// next dev compila cada ruta la primera vez que se pide. Si esa compilación ocurre durante la
+// navegación de la prueba, la página se recarga y page.evaluate pierde su contexto. Se calientan
+// todas las rutas antes, con peticiones simples (sin navegar).
+test.beforeAll(async ({ request }) => {
+  for (const ruta of [...PAGINAS, ...PAGINAS_CLIENTE]) {
+    await request.get(ruta);
+  }
+});
 
 test.describe("sin desplazamiento horizontal", () => {
   test.beforeEach(async ({ page }) => {
@@ -42,6 +52,28 @@ test.describe("estructura accesible", () => {
       await page.keyboard.press("Tab");
       await expect(page.getByRole("link", { name: "Saltar al contenido" })).toBeFocused();
     });
+  }
+});
+
+// Área de cliente: sesión de cliente con consentimiento (apoyo.ts), no la de staff.
+const PAGINAS_CLIENTE = ["/mi-cuenta", "/mi-cuenta/solicitudes/nueva"];
+
+test.describe("área de cliente sin desplazamiento horizontal", () => {
+  test.beforeEach(async ({ page }) => {
+    await registrarClienteYConsentir(page, correoE2E());
+  });
+
+  for (const ancho of ANCHOS) {
+    for (const pagina of PAGINAS_CLIENTE) {
+      test(`${pagina} a ${ancho} px no desborda`, async ({ page }) => {
+        await page.setViewportSize({ width: ancho, height: 800 });
+        await page.goto(pagina);
+        const desborda = await page.evaluate(
+          () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+        );
+        expect(desborda).toBe(false);
+      });
+    }
   }
 });
 

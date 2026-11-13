@@ -46,8 +46,15 @@ export function seSolapan(
   return montoSeCruza && vigenciaSeCruza;
 }
 
+// Lectura: basta con el permiso condiciones.ver (lo tienen clientes y staff; contratos.md §2).
+function exigirLectura(actor: Actor): void {
+  if (!can(actor, "condiciones.ver")) {
+    throw new ErrorDominio("PROHIBIDO", "No puedes consultar las condiciones");
+  }
+}
+
 export async function listarCondiciones(actor: Actor) {
-  exigirPermiso(actor, "condiciones.ver");
+  exigirLectura(actor);
   return getDb()
     .select()
     .from(condicionesTasa)
@@ -55,12 +62,12 @@ export async function listarCondiciones(actor: Actor) {
 }
 
 export async function listarFestivos(actor: Actor) {
-  exigirPermiso(actor, "condiciones.ver");
+  exigirLectura(actor);
   return getDb().select().from(festivos).orderBy(asc(festivos.fecha));
 }
 
 export async function listarEntidades(actor: Actor) {
-  exigirPermiso(actor, "condiciones.ver");
+  exigirLectura(actor);
   return getDb().select().from(entidades).orderBy(asc(entidades.nombre));
 }
 

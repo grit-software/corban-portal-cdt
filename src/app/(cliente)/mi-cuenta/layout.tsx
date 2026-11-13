@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import type { ReactNode } from "react";
+import { ProveedorConsultas } from "@/components/cliente/proveedor-consultas";
 import { ShellCliente } from "@/components/shell/shell-cliente";
 import { getActor } from "@/server/auth/actor";
 
@@ -35,5 +36,9 @@ export default async function LayoutMiCuenta({ children }: { children: ReactNode
   if (!actor.consentimiento) {
     redirect("/consentimiento");
   }
-  return <ShellCliente>{children}</ShellCliente>;
+  return (
+    <ShellCliente>
+      <ProveedorConsultas>{children}</ProveedorConsultas>
+    </ShellCliente>
+  );
 }

@@ -99,16 +99,5 @@ export function valorEnLetras(n: number): string {
   return n ? `${enLetras(n)} PESOS M/CTE` : "";
 }
 
-// 50000000 → "50.000.000"; 0 → "" (como money() del POC, sin prefijo).
-export function formatoMiles(n: number): string {
-  if (!n) return "";
-  return Math.trunc(n)
-    .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-}
-
-// "10.5000" → "10,50" (dos decimales, coma decimal) para los PDF.
-export function tasaTexto(tasa: string): string {
-  const [entera = "0", decimal = ""] = tasa.split(".");
-  return `${entera},${decimal.slice(0, 2).padEnd(2, "0")}`;
-}
+// Formato de miles y de tasa viven en src/lib (puros, también los usa el navegador).
+export { formatoMiles, tasaTexto } from "@/lib/datos/formato";

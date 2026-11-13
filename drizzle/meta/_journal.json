@@ -8,6 +8,20 @@
       "when": 1794541955378,
       "tag": "0000_greedy_la_nuit",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794542803975,
+      "tag": "0001_nasty_leper_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794542808864,
+      "tag": "0002_auditoria_inmutable",
+      "breakpoints": true
     }
   ]
 }

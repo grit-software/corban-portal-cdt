@@ -6,6 +6,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
+  // SDKs de Azure: se quedan fuera del bundle del servidor. @azure/identity arrastra "open" →
+  // powershell-utils, que Turbopack no puede resolver en Windows (E2-T5).
+  serverExternalPackages: ["@azure/identity", "@azure/storage-blob"],
   outputFileTracingRoot: process.cwd(),
   turbopack: {
     root: process.cwd(),

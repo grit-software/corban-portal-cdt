@@ -18,7 +18,7 @@ import { getDb } from "@/server/db/client";
 import { clientes, entidades, solicitudEventos, solicitudes } from "@/server/db/schema";
 import { exigirAcceso, exigirCliente } from "./acceso.ts";
 import { EDITABLES_CLIENTE } from "./estados.ts";
-import { ejecutarTransicion } from "./transicion.ts";
+import { aplicarTransicion } from "./transicion.ts";
 import { visiblesPara } from "./visibilidad.ts";
 
 // Servicio de solicitudes. Cada función autoriza antes de leer o escribir (CLAUDE.md, regla 5);
@@ -236,7 +236,7 @@ export async function enviar(actor: Actor, id: string) {
       metadata: { desde: previa.estado, hacia: "pendiente_validacion" },
     },
     async (tx) => {
-      await ejecutarTransicion(tx, {
+      await aplicarTransicion(tx, {
         solicitudId: id,
         accion: "enviar",
         actorUserId: actor.userId,

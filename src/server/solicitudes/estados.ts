@@ -1,5 +1,6 @@
 // Máquina de estados de la solicitud (docs/referencia/contratos.md §3), como datos.
-// Solo las transiciones se ejecutan desde ejecutarTransicion(); aquí se decide si son válidas.
+// Solo las transiciones se ejecutan desde ejecutarTransicion() (transiciones.ts); aquí se decide
+// si son válidas.
 
 export const ESTADOS = [
   "borrador",

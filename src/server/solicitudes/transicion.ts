@@ -7,7 +7,7 @@ import { type Accion, destinoDe, transicionValida } from "./estados.ts";
 // Única vía para cambiar el estado de una solicitud (CLAUDE.md, reglas de server.md).
 // Debe llamarse dentro de conAuditoria(): la fila de auditoría y la de evento van en la misma
 // transacción que el cambio. Bloquea la fila con FOR UPDATE antes de validar.
-export async function ejecutarTransicion(
+export async function aplicarTransicion(
   tx: Tx,
   entrada: {
     solicitudId: string;

@@ -1,120 +1,35 @@
-import { randomBytes, randomUUID } from "node:crypto";
-import { readdir, readFile } from "node:fs/promises";
-import path from "node:path";
+import { randomBytes } from "node:crypto";
 import { and, eq } from "drizzle-orm";
 import { afterAll, describe, expect, it } from "vitest";
-import { POST as aceptarInvitacionRoute } from "@/app/api/v1/auth/invitaciones/[token]/aceptar/route";
-import { POST as registroRoute } from "@/app/api/v1/auth/registro/route";
-import {
-  POST as consentimientoPost,
-  GET as consentimientoGet,
-} from "@/app/api/v1/consentimiento/route";
 import { POST as authRoute } from "@/app/api/auth/[...all]/route";
-import { getEnv } from "@/lib/env";
+import { POST as aceptarInvitacionRoute } from "@/app/api/v1/auth/invitaciones/[token]/aceptar/route";
+import {
+  GET as consentimientoGet,
+  POST as consentimientoPost,
+} from "@/app/api/v1/consentimiento/route";
+import { POST as registroRoute } from "@/app/api/v1/auth/registro/route";
 import { getActor } from "@/server/auth/actor";
 import { cookieDe } from "@/server/auth/sesion-prueba";
-import type { Actor } from "@/server/authz/actor";
 import { crearInvitacion, hashToken } from "@/server/clientes/acceso/invitacion";
 import { cerrarDb, getDb } from "@/server/db/client";
-import { clientes, invitaciones, staffMembers } from "@/server/db/schema";
+import { clientes, invitaciones } from "@/server/db/schema";
+import {
+  BASE,
+  correoUnico,
+  correosPara,
+  documentoUnico,
+  enviarOtp,
+  ingresarCliente,
+  ipUnica,
+  peticion,
+  staffDePrueba,
+  ultimoOtp,
+} from "../helpers/auth-clientes.ts";
 
-const BASE = getEnv().BETTER_AUTH_URL;
+// Una sola limpieza para todo el archivo: cerrar la base antes de la última prueba.
+afterAll(cerrarDb);
 
-function correoUnico(): string {
-  return `${randomUUID()}@prueba.co`;
-}
-
-function ipUnica(): string {
-  return `10.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
-}
-
-function documentoUnico(): string {
-  return randomUUID().replaceAll("-", "").slice(0, 12);
-}
-
-// Correos de prueba: el driver file escribe un JSON por correo en MAIL_FILE_DIR.
-type Correo = { para: string; asunto: string; html: string; texto: string };
-
-async function correosPara(email: string): Promise<Correo[]> {
-  const directorio = path.resolve(getEnv().MAIL_FILE_DIR);
-  let nombres: string[];
-  try {
-    nombres = (await readdir(directorio)).sort();
-  } catch {
-    return [];
-  }
-  const correos: Correo[] = [];
-  for (const nombre of nombres) {
-    const correo = JSON.parse(await readFile(path.join(directorio, nombre), "utf8")) as Correo;
-    if (correo.para === email) {
-      correos.push(correo);
-    }
-  }
-  return correos;
-}
-
-// Código de 6 dígitos del último correo de OTP (contratos y pruebas: /\b(\d{6})\b/ sobre texto).
-async function ultimoOtp(email: string): Promise<string> {
-  const correos = await correosPara(email);
-  const ultimo = correos.at(-1);
-  const coincidencia = /\b(\d{6})\b/.exec(ultimo?.texto ?? "");
-  if (!coincidencia?.[1]) {
-    throw new Error("No llegó el código OTP");
-  }
-  return coincidencia[1];
-}
-
-function peticion(ruta: string, cuerpo: unknown, cabeceras: Record<string, string> = {}): Request {
-  return new Request(`${BASE}${ruta}`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      origin: new URL(BASE).origin,
-      ...cabeceras,
-    },
-    body: JSON.stringify(cuerpo),
-  });
-}
-
-async function enviarOtp(email: string, ip: string): Promise<Response> {
-  return authRoute(
-    peticion(
-      "/api/auth/email-otp/send-verification-otp",
-      { email, type: "sign-in" },
-      { "x-forwarded-for": ip },
-    ),
-  );
-}
-
-async function ingresarCliente(email: string): Promise<string> {
-  await enviarOtp(email, ipUnica());
-  const otp = await ultimoOtp(email);
-  const respuesta = await authRoute(
-    peticion("/api/auth/sign-in/email-otp", { email, otp }, { "x-forwarded-for": ipUnica() }),
-  );
-  expect(respuesta.status).toBe(200);
-  return cookieDe(respuesta);
-}
-
-async function staffDePrueba(rol: "asesor" | "coordinador") {
-  const email = correoUnico();
-  const [fila] = await getDb()
-    .insert(staffMembers)
-    .values({ email, nombre: "Asesor de prueba", rol })
-    .returning({ id: staffMembers.id });
-  const actor: Actor = {
-    tipo: "staff",
-    userId: `usr-${randomUUID()}`,
-    staffId: fila?.id ?? "",
-    rol,
-    email,
-  };
-  return actor;
-}
-
-describe("autenticación de clientes", () => {
-  afterAll(cerrarDb);
-
+describe("autenticación de clientes: registro y OTP", () => {
   it("registro: crea el cliente sin usuario, no duplica y rechaza otro correo (201 / 409)", async () => {
     const numDoc = documentoUnico();
     const email = correoUnico();
@@ -191,10 +106,15 @@ describe("autenticación de clientes", () => {
 
   it("OTP: el código correcto crea sesión y enlaza el cliente; el incorrecto no crea sesión", async () => {
     const email = correoUnico();
-    const numDoc = documentoUnico();
     const [cliente] = await getDb()
       .insert(clientes)
-      .values({ tipoDoc: "CC", numDoc, email, nombre: "Enlace", origen: "registro" })
+      .values({
+        tipoDoc: "CC",
+        numDoc: documentoUnico(),
+        email,
+        nombre: "Enlace",
+        origen: "registro",
+      })
       .returning({ id: clientes.id });
 
     await enviarOtp(email, ipUnica());
@@ -226,8 +146,10 @@ describe("autenticación de clientes", () => {
     expect(respuesta.status).toBe(403);
     expect((await respuesta.json()).error.code).toBe("USAR_MICROSOFT");
   });
+});
 
-  it("invitación: aceptarla fija el asesor y el usuario; repetirla o vencida responde 410", async () => {
+describe("autenticación de clientes: invitaciones y consentimiento", () => {
+  it("invitación: aceptarla fija el asesor y el usuario; repetirla responde 410", async () => {
     const asesor = await staffDePrueba("asesor");
     const email = correoUnico();
     await crearInvitacion(asesor, {

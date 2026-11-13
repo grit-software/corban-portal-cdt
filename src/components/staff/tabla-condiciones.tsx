@@ -19,7 +19,7 @@ export function TablaCondiciones({ filas }: { filas: FilaCondicionVista[] }) {
   }
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[640px] text-left text-sm">
+      <table className="w-full text-left text-sm">
         <thead className="border-b border-border text-muted-foreground">
           <tr>
             <th className="py-2 font-medium">Entidad</th>

@@ -1,4 +1,4 @@
-import { and, asc, eq, gte, isNull, lte, or, sql } from "drizzle-orm";
+import { and, asc, eq, gte, isNull, lte, or } from "drizzle-orm";
 import type { Actor } from "@/server/authz/actor";
 import { can } from "@/server/authz/can";
 import { ErrorDominio } from "@/server/authz/errores";
@@ -55,7 +55,6 @@ export async function opcionesPara(
         or(isNull(condicionesTasa.vigenteHasta), gte(condicionesTasa.vigenteHasta, hoy)),
         lte(condicionesTasa.montoMin, valor),
         or(isNull(condicionesTasa.montoMax), gte(condicionesTasa.montoMax, valor)),
-        sql`true`,
       ),
     )
     .orderBy(asc(condicionesTasa.plazoDias), asc(condicionesTasa.periodicidad));

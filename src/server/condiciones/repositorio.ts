@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { and, asc, eq, ne, sql } from "drizzle-orm";
+import { and, asc, eq, ne } from "drizzle-orm";
 import type { Actor, ActorStaff } from "@/server/authz/actor";
 import { can } from "@/server/authz/can";
 import { ErrorDominio } from "@/server/authz/errores";
@@ -87,7 +87,7 @@ async function validarSinSolape(
         eq(condicionesTasa.entidadId, datos.entidadId),
         eq(condicionesTasa.plazoDias, datos.plazoDias),
         eq(condicionesTasa.periodicidad, datos.periodicidad),
-        excluirId ? ne(condicionesTasa.id, excluirId) : sql`true`,
+        excluirId ? ne(condicionesTasa.id, excluirId) : undefined,
       ),
     );
   const choca = existentes.some((otra) => seSolapan(datos, otra));

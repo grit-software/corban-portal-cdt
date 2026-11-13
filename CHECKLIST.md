@@ -1,0 +1,52 @@
+# Checklist — corban-portal-cdt
+
+Fuente: `blueprints/corban-portal-cdt/tasks.json` (E1-T1 a E3-T6).
+Regla: una tarea solo se marca como hecha cuando sus gates (`verify`) pasan.
+
+## Prerrequisitos
+
+- [x] Paso 1 — tag `step-01-andamiaje`
+- [x] `pnpm install` (existe `node_modules/.pnpm`)
+- [x] Postgres healthy (`docker compose up -d --wait postgres`) — verificado 2026-11-13
+
+## Épica 01 — fundaciones
+
+- [x] **E1-T1** Andamiaje y cadena de herramientas — verificado 2026-11-13
+  - [x] `pnpm lint` (exit 0)
+  - [x] `pnpm typecheck` (exit 0)
+  - [x] `pnpm test` (17/17 archivos, 384 pruebas)
+  - [x] `pnpm build` (produce `.next/standalone/server.js`)
+  - [x] `sh scripts/smoke-standalone.sh /api/health '"status":"ok"'` (200)
+- [x] **E1-T2** Servicios locales, entorno y cliente de BD (depende de E1-T1) — verificado 2026-11-13
+- [x] **E1-T3** Esquema completo, auditoría inmutable y semilla (depende de E1-T2) — verificado 2026-11-13 (4 entidades)
+- [x] **E1-T4** Autorización `can()`, auditoría transaccional y logger (depende de E1-T3) — verificado 2026-11-13
+- [x] **E1-T5** Autenticación del staff (Entra, lista blanca, test-login) (depende de E1-T4) — verificado 2026-11-13
+- [x] **E1-T6** Autenticación de clientes: registro, OTP e invitaciones (depende de E1-T5) — verificado 2026-11-13
+- [x] **E1-T7** Condiciones de tasa, festivos y motor de cálculo (depende de E1-T6) — verificado 2026-11-13
+
+## Épica 02 — producto cliente y asesor
+
+- [x] **E2-T1** Sistema de diseño y shells (depende de E1-T6, E1-T7) — verificado 2026-11-13: contraste 16/16, responsive 28/28, typecheck y lint exit 0 (tras borrar `_oldnext/`), build exit 0 con `.next/standalone/server.js`, `display: "swap"` presente.
+- [x] **E2-T2** API v1 del cliente: perfil, solicitudes y envío (depende de E1-T6, E1-T7) — verificado 2026-11-13
+- [x] **E2-T3** Asistente del cliente, mobile-first (depende de E2-T1, E2-T2) — verificado 2026-11-13: asistente 4/4 (3 corridas seguidas tras el ajuste), responsive 28/28, typecheck, lint y build exit 0. Causa del fallo: la aserción de `abrirCdtCon` tenía 5 s y la creación de la solicitud en `next dev` tardaba más (botón `Abriendo…` deshabilitado en el snapshot). Ajuste en `tests/e2e/asistente.spec.ts`: margen de 30 s. Además, `playwright.config.ts` borra `.next` antes de arrancar `next dev`.
+  - Historial previo (ya resuelto):
+  - `asistente.spec.ts`: 4/4 en 3 de 4 corridas. Una corrida falló las 4 pruebas (la URL se quedó en `/nueva`, sin llegar a `/paso=cdt`). Hipótesis sin confirmar: clic antes de hidratar en el primer uso con caché fría de `next dev`.
+  - `responsive.spec.ts` dentro de la cadena E2-T3: **20 fallos** cuando corre justo después de `asistente.spec.ts`; pasa cuando corre solo (E2-T1). Mismo síntoma que el fallo anterior de responsive (`Execution context was destroyed`).
+  - Decisión del usuario (2026-11-13): aceptar el e2e intermitente. Sin marcar: `CLAUDE.md` (no negociable 7) prohíbe marcar una tarea con un gate en rojo, y el gate de E2-T3 falla en algunas corridas. Marcarla requiere una excepción explícita en `CLAUDE.md` o en el blueprint, que decide el usuario.
+  - Intento de correr el e2e contra la build standalone: descartado. `/api/test/login` responde 404 con `NODE_ENV=production` (`src/app/api/test/login/route.ts:12`), así que el login de staff de las pruebas falla. Se revirtieron `playwright.config.ts` y el script temporal.
+  - Con `.next` borrado (2026-11-13): asistente 1 fallo y responsive 20 fallos. Luego asistente 4 fallos. El servidor de `next dev` registró `The destination stream errored while writing data`. La hipótesis de la caché de `.next` queda descartada como causa única: los fallos crecen con las corridas sucesivas.
+- [x] **E2-T4** Motor PDF y pruebas golden de los 6 formatos (depende de E1-T7, E2-T2) — verificado 2026-11-13 (mapeo 14/14, golden 24/24 en dos corridas)
+- [x] **E2-T5** Máquina de estados, validación y PDFs versionados (depende de E2-T2, E2-T4) — verificado 2026-11-13 (estados 9/9)
+- [x] **E2-T6** Carga del documento firmado y revisión (depende de E2-T3, E2-T5) — verificado 2026-11-13 (firmas 7/7, typecheck, lint, build exit 0)
+- [x] **E2-T7** Espacio de trabajo del asesor (depende de E2-T6) — verificado 2026-11-13 (asesor 8/8, typecheck, lint, build exit 0)
+
+## Épica 03 — entrega y operación
+
+> Estado 2026-11-13: no existen los archivos de prueba de E3 (`tests/integration/portafolio|importacion|reportes|notificaciones|endurecimiento|ci`). La implementación no está hecha; las casillas siguen sin marcar.
+
+- [ ] **E3-T1** Envío a la entidad, constitución y portafolio (depende de E2-T7)
+- [ ] **E3-T2** Importación desde Excel (depende de E3-T1)
+- [ ] **E3-T3** Reportes de gerencia y exportación (depende de E3-T1)
+- [ ] **E3-T4** Notificaciones, PWA y administración del staff (depende de E3-T3)
+- [ ] **E3-T5** Endurecimiento y E2E de los 4 flujos (depende de E3-T2, E3-T4)
+- [ ] **E3-T6** Contenedor, CI y lista de lanzamiento (depende de E3-T5)

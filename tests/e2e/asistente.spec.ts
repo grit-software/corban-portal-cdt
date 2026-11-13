@@ -7,7 +7,8 @@ import { correoE2E, registrarClienteYConsentir } from "./apoyo.ts";
 async function abrirCdtCon(page: Page, entidad: string) {
   await page.goto("/mi-cuenta/solicitudes/nueva");
   await page.getByRole("button", { name: new RegExp(entidad) }).click();
-  await expect(page).toHaveURL(/paso=cdt/);
+  // Crear la solicitud compila la ruta en next dev y puede pasar de 5 s: mismo margen que el resumen.
+  await expect(page).toHaveURL(/paso=cdt/, { timeout: 30000 });
 }
 
 async function rellenarCdt(page: Page, plazo: string) {

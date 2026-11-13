@@ -34,7 +34,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `pnpm dev --port ${PUERTO} --hostname 127.0.0.1`,
+    // Se borra la caché de `next dev` (.next) antes de arrancar: cada corrida parte de cero.
+    command: `node -e "require('node:fs').rmSync('.next',{recursive:true,force:true})" && pnpm dev --port ${PUERTO} --hostname 127.0.0.1`,
     url: `${URL_BASE}/api/health`,
     reuseExistingServer: !process.env.CI,
     timeout: 240000,

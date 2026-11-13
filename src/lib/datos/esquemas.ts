@@ -134,6 +134,18 @@ export const esquemaPerfil = z
   .partial()
   .strict();
 
+// Todas las claves de datos de cualquier paso: la edición del equipo se valida en bloque.
+export const ESQUEMA_DATOS = z
+  .object({
+    ...ESQUEMA_PASO.cdt.shape,
+    ...ESQUEMA_PASO.personal.shape,
+    ...ESQUEMA_PASO.laboral.shape,
+    ...ESQUEMA_PASO.financiera.shape,
+    ...ESQUEMA_PASO.pago.shape,
+  })
+  .partial()
+  .strict();
+
 // Obligatorias para enviar a validación (contratos.md §6, en negrita). La entidad va en la
 // columna entidad_id, no en datos.
 export const OBLIGATORIAS = [

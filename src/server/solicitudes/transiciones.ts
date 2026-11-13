@@ -21,11 +21,12 @@ const PERMISO: Partial<Record<Accion, string>> = {
   cancelar: "solicitud.cancelar",
   enviar_entidad: "solicitud.enviar_entidad",
   cargar_firma: "solicitud.cargar_firma",
+  editar_post_aprobacion: "solicitud.editar",
   aceptar_firma: "solicitud.revisar_firma",
   rechazar_firma: "solicitud.revisar_firma",
 };
 
-export type EntradaTransicion = { nota?: string | null };
+export type EntradaTransicion = { nota?: string | null; metadata?: Record<string, unknown> };
 export type Efecto = (tx: Tx, fila: FilaSolicitud) => Promise<void>;
 
 export async function ejecutarTransicion(
@@ -75,7 +76,12 @@ export async function ejecutarTransicion(
       actorUserId: actor.userId,
       nota: entrada.nota ?? null,
     });
-    evento.metadata = { desde: resultado.desde, hacia: resultado.hacia };
+    // Los metadatos de la entrada (p. ej. los diffs de una edición) van junto a desde y hacia.
+    evento.metadata = {
+      ...(entrada.metadata ?? {}),
+      desde: resultado.desde,
+      hacia: resultado.hacia,
+    };
     return resultado;
   });
 }

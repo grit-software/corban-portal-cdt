@@ -14,7 +14,9 @@ export default function prepararE2e(): void {
   rmSync(".data/e2e-mail", { recursive: true, force: true });
   rmSync(".data/e2e-storage", { recursive: true, force: true });
   const env = { ...process.env, DATABASE_URL: urlPruebas };
-  execFileSync("pnpm", ["db:test:prepare"], { stdio: "inherit", env });
-  execFileSync("pnpm", ["db:seed:demo"], { stdio: "inherit", env });
-  execFileSync("pnpm", ["exec", "tsx", "scripts/semilla-e2e.ts"], { stdio: "inherit", env });
+  // En Windows pnpm es pnpm.cmd: execFileSync sin shell no lo encuentra (spawn ENOENT).
+  const shell = process.platform === "win32";
+  execFileSync("pnpm", ["db:test:prepare"], { stdio: "inherit", env, shell });
+  execFileSync("pnpm", ["db:seed:demo"], { stdio: "inherit", env, shell });
+  execFileSync("pnpm", ["exec", "tsx", "scripts/semilla-e2e.ts"], { stdio: "inherit", env, shell });
 }

@@ -59,7 +59,8 @@ test.describe("asistente del cliente", () => {
 
     await expect(page).toHaveURL(/paso=resumen/);
     await page.getByRole("button", { name: "Enviar a validación" }).click();
-    await expect(page).toHaveURL(/\/mi-cuenta\/solicitudes\/[0-9a-f-]{36}$/);
+    // El detalle se compila la primera vez en next dev: se da más margen a esta navegación.
+    await expect(page).toHaveURL(/\/mi-cuenta\/solicitudes\/[0-9a-f-]{36}$/, { timeout: 30000 });
     await expect(page.getByRole("heading", { name: "Pendiente de validación" })).toBeVisible();
   });
 

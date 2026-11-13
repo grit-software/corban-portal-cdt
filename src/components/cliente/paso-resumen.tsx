@@ -36,8 +36,8 @@ export function PasoResumen({
     const resultado = await llamarApi("POST", `/api/v1/solicitudes/${solicitudId}/enviar`);
     setEnviando(false);
     if (resultado.ok) {
+      // Sin router.refresh(): cancelaría la navegación. El detalle se pinta fresco en el servidor.
       router.push(`/mi-cuenta/solicitudes/${solicitudId}`);
-      router.refresh();
       return;
     }
     setMensaje(resultado.error.message);

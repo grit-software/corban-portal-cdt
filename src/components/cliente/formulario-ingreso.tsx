@@ -42,8 +42,8 @@ export function FormularioIngreso({ siguiente }: { siguiente: string }) {
       setError(mensajeDeError(fallo.status));
       return;
     }
+    // Sin router.refresh(): cancelaría la navegación al destino.
     router.push(siguiente);
-    router.refresh();
   }
 
   if (paso === "correo") {

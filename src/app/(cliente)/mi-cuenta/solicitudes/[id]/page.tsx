@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CargaFirmada } from "@/components/cliente/carga-firmada";
 import { DocumentosSolicitud } from "@/components/cliente/documentos-solicitud";
 import { ETIQUETA_ESTADO, SIGUIENTE_PASO_CLIENTE } from "@/lib/datos/pasos";
 import { getActor } from "@/server/auth/actor";
 import { ErrorDominio } from "@/server/authz/errores";
 import { obtenerSolicitud } from "@/server/solicitudes/servicio";
+import { listarDocumentos } from "@/server/solicitudes/documentos";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +52,13 @@ export default async function PaginaSolicitud({ params }: { params: Promise<{ id
         </Link>
       ) : null}
 
-      <DocumentosSolicitud estado={solicitud.estado} />
+      <DocumentosSolicitud
+        solicitudId={id}
+        estado={solicitud.estado}
+        documentos={await listarDocumentos(actor, id)}
+      />
+
+      {solicitud.estado === "pendiente_firma" ? <CargaFirmada solicitudId={id} /> : null}
 
       <section aria-labelledby="titulo-linea" className="flex flex-col gap-3">
         <h2 id="titulo-linea" className="text-lg font-semibold">

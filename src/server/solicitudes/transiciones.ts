@@ -20,6 +20,9 @@ const PERMISO: Partial<Record<Accion, string>> = {
   devolver: "solicitud.devolver",
   cancelar: "solicitud.cancelar",
   enviar_entidad: "solicitud.enviar_entidad",
+  cargar_firma: "solicitud.cargar_firma",
+  aceptar_firma: "solicitud.revisar_firma",
+  rechazar_firma: "solicitud.revisar_firma",
 };
 
 export type EntradaTransicion = { nota?: string | null };

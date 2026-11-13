@@ -55,8 +55,35 @@ test.describe("estructura accesible", () => {
   }
 });
 
+// Páginas de staff del barrido completo (E3-T5), cada una con el rol que la ve.
+const PAGINAS_STAFF: { ruta: string; email: string }[] = [
+  { ruta: "/asesor", email: "asesor.e2e@corbanfc.com" },
+  { ruta: "/asesor/solicitudes", email: "asesor.e2e@corbanfc.com" },
+  { ruta: "/asesor/clientes", email: "asesor.e2e@corbanfc.com" },
+  { ruta: "/coordinador/importar", email: "coordinador.e2e@corbanfc.com" },
+  { ruta: "/gerencia", email: "gerencia.e2e@corbanfc.com" },
+  { ruta: "/admin/staff", email: "admin.e2e@corbanfc.com" },
+];
+
+test.describe("barrido responsive de staff", () => {
+  for (const ancho of ANCHOS) {
+    for (const { ruta, email } of PAGINAS_STAFF) {
+      test(`${ruta} a ${ancho} px no desborda`, async ({ page }) => {
+        const respuesta = await page.request.post("/api/test/login", { data: { email } });
+        expect(respuesta.ok()).toBe(true);
+        await page.setViewportSize({ width: ancho, height: 800 });
+        await page.goto(ruta);
+        const desborda = await page.evaluate(
+          () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+        );
+        expect(desborda).toBe(false);
+      });
+    }
+  }
+});
+
 // Área de cliente: sesión de cliente con consentimiento (apoyo.ts), no la de staff.
-const PAGINAS_CLIENTE = ["/mi-cuenta", "/mi-cuenta/solicitudes/nueva"];
+const PAGINAS_CLIENTE = ["/mi-cuenta", "/mi-cuenta/solicitudes/nueva", "/mi-cuenta/portafolio"];
 
 test.describe("área de cliente sin desplazamiento horizontal", () => {
   test.beforeEach(async ({ page }) => {

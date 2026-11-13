@@ -1,0 +1,13 @@
+.git
+.next
+node_modules
+.data
+.env
+.env.*
+blueprints
+.claude
+docs
+tests
+coverage
+playwright-report
+test-results

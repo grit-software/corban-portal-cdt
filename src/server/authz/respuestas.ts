@@ -1,3 +1,4 @@
+import type { ZodType } from "zod";
 import { getEnv } from "@/lib/env";
 import { log } from "@/lib/logger";
 import { ErrorDominio, HTTP_POR_CODIGO } from "./errores.ts";
@@ -34,19 +35,42 @@ export function respuestaError(error: unknown, requestId?: string): Response {
   );
 }
 
-// Lee el cuerpo JSON de la petición; un cuerpo inválido es VALIDACION.
-export async function leerCuerpo(request: Request): Promise<unknown> {
-  try {
-    return await request.json();
-  } catch {
-    throw new ErrorDominio("VALIDACION", "El cuerpo de la petición debe ser JSON válido");
-  }
+// 429 LIMITE_EXCEDIDO con cabecera Retry-After en segundos.
+export function respuestaLimite(reintentarEn: number): Response {
+  const respuesta = respuestaError(
+    new ErrorDominio("LIMITE_EXCEDIDO", "Demasiados intentos. Espera e intenta de nuevo."),
+  );
+  respuesta.headers.set("Retry-After", String(reintentarEn));
+  return respuesta;
 }
 
-// Protección básica de mutaciones: el origen debe ser la URL pública de la aplicación.
+// Lee el cuerpo JSON y lo valida con el esquema zod del borde. Inválido → 422 VALIDACION con fields.
+export async function leerCuerpo<T>(request: Request, esquema: ZodType<T>): Promise<T> {
+  const crudo: unknown = await request.json().catch(() => undefined);
+  if (crudo === undefined) {
+    throw new ErrorDominio("VALIDACION", "El cuerpo de la petición debe ser JSON válido");
+  }
+  const resultado = esquema.safeParse(crudo);
+  if (!resultado.success) {
+    const campos: Record<string, string> = {};
+    for (const problema of resultado.error.issues) {
+      const clave = problema.path.map(String).join(".") || "cuerpo";
+      campos[clave] ??= problema.message;
+    }
+    throw new ErrorDominio("VALIDACION", "Revisa los campos marcados", campos);
+  }
+  return resultado.data;
+}
+
+// Protección de mutaciones: el origen debe ser la URL pública de la aplicación.
 export function exigirMismoOrigen(request: Request): void {
   const esperado = new URL(getEnv().BETTER_AUTH_URL).origin;
   if (request.headers.get("origin") !== esperado) {
     throw new ErrorDominio("PROHIBIDO", "Origen de la petición no permitido");
   }
+}
+
+// Dirección del cliente para límites de tasa: primer valor de x-forwarded-for.
+export function ipDe(request: Request): string {
+  return request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "desconocida";
 }

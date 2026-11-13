@@ -17,8 +17,8 @@ export async function consumirLimite(
     .onConflictDoUpdate({
       target: rateLimits.clave,
       set: {
-        conteo: sql`case when ${rateLimits.ventanaInicio} < ${inicioVentana} then 1 else ${rateLimits.conteo} + 1 end`,
-        ventanaInicio: sql`case when ${rateLimits.ventanaInicio} < ${inicioVentana} then ${ahora} else ${rateLimits.ventanaInicio} end`,
+        conteo: sql`case when ${rateLimits.ventanaInicio} < ${inicioVentana.toISOString()}::timestamptz then 1 else ${rateLimits.conteo} + 1 end`,
+        ventanaInicio: sql`case when ${rateLimits.ventanaInicio} < ${inicioVentana.toISOString()}::timestamptz then ${ahora.toISOString()}::timestamptz else ${rateLimits.ventanaInicio} end`,
       },
     })
     .returning({ conteo: rateLimits.conteo, ventanaInicio: rateLimits.ventanaInicio });

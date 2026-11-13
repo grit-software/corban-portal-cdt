@@ -44,7 +44,7 @@ Regla: una tarea solo se marca como hecha cuando sus gates (`verify`) pasan.
 
 > Estado 2026-11-13: no existen los archivos de prueba de E3 (`tests/integration/portafolio|importacion|reportes|notificaciones|endurecimiento|ci`). La implementación no está hecha; las casillas siguen sin marcar.
 
-- [ ] **E3-T1** Envío a la entidad, constitución y portafolio (depende de E2-T7)
+- [x] **E3-T1** Envío a la entidad, constitución y portafolio (depende de E2-T7) — verificado 2026-11-13 en local, rama `e3-t1-portafolio` (commit `e5315ea` de la sesión cloud, traído por bundle). Gates: `docker compose up -d --wait postgres` y `pnpm db:test:prepare` OK; `pnpm test tests/integration/portafolio.test.ts` 8/8; `pnpm typecheck` OK; `pnpm lint` OK tras `pnpm format` (15 archivos con solo cambio de fin de línea CRLF→LF); `pnpm build` OK. Pendiente: commit del formato y push de la rama.
 - [ ] **E3-T2** Importación desde Excel (depende de E3-T1)
 - [ ] **E3-T3** Reportes de gerencia y exportación (depende de E3-T1)
 - [ ] **E3-T4** Notificaciones, PWA y administración del staff (depende de E3-T3)

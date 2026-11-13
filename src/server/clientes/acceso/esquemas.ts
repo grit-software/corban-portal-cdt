@@ -11,11 +11,15 @@ export const esquemaRegistro = z.object({
     .regex(/^[A-Za-z0-9]{5,20}$/, "El número de documento debe tener entre 5 y 20 caracteres"),
   nombre: z.string().trim().min(2, "Escribe tu nombre").max(120),
   email: z.email("Escribe un correo válido").transform((correo) => correo.trim().toLowerCase()),
-  celular: z
-    .string()
-    .trim()
-    .regex(/^\d{7,15}$/, "El celular solo tiene dígitos")
-    .optional(),
+  // Opcional: un campo vacío llega como "" desde el formulario y equivale a no enviarlo.
+  celular: z.preprocess(
+    (valor) => (typeof valor === "string" && valor.trim() === "" ? undefined : valor),
+    z
+      .string()
+      .trim()
+      .regex(/^\d{7,15}$/, "El celular solo tiene dígitos")
+      .optional(),
+  ),
 });
 
 export type DatosRegistro = z.infer<typeof esquemaRegistro>;

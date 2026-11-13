@@ -3,8 +3,10 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ETIQUETA_ESTADO, SIGUIENTE_PASO_CLIENTE } from "@/lib/datos/pasos";
+import { ResumenPortafolio } from "@/components/cliente/resumen-portafolio";
 import { getActor } from "@/server/auth/actor";
 import { ErrorDominio } from "@/server/authz/errores";
+import { portafolioDe } from "@/server/portafolio/consultas";
 import { listarMias } from "@/server/solicitudes/servicio";
 
 export const dynamic = "force-dynamic";
@@ -13,15 +15,17 @@ export const metadata: Metadata = {
   title: "Mi cuenta · Corban CDT",
 };
 
-// Inicio del cliente: sus solicitudes con estado y el siguiente paso, y «Abrir un CDT».
+// Inicio del cliente: resumen del portafolio, sus solicitudes con estado y el siguiente paso,
+// y «Abrir un CDT».
 export default async function PaginaMiCuenta() {
   const actor = await getActor(await headers());
   if (actor?.tipo !== "cliente") {
     notFound();
   }
   let solicitudes: Awaited<ReturnType<typeof listarMias>>;
+  let portafolio: Awaited<ReturnType<typeof portafolioDe>>;
   try {
-    solicitudes = await listarMias(actor);
+    [solicitudes, portafolio] = await Promise.all([listarMias(actor), portafolioDe(actor)]);
   } catch (error) {
     if (error instanceof ErrorDominio) notFound();
     throw error;
@@ -29,6 +33,8 @@ export default async function PaginaMiCuenta() {
 
   return (
     <div className="flex flex-col gap-6">
+      <ResumenPortafolio portafolio={portafolio} enInicio />
+
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-semibold">Mis solicitudes</h1>
         <Link

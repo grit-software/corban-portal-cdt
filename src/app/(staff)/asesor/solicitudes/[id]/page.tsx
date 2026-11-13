@@ -5,7 +5,9 @@ import { AccionesSolicitud } from "@/components/staff/acciones-solicitud";
 import { ETIQUETA_ESTADO } from "@/lib/datos/pasos";
 import { getActor } from "@/server/auth/actor";
 import { ErrorDominio } from "@/server/authz/errores";
+import { FormularioConstitucion } from "@/components/staff/formulario-constitucion";
 import { detalleStaff } from "@/server/solicitudes/consultas";
+import { registrarConstitucion } from "./acciones.ts";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +49,27 @@ export default async function PaginaDetalleAsesor({ params }: { params: Promise<
       ) : null}
 
       <AccionesSolicitud solicitudId={id} estado={solicitud.estado} />
+
+      {solicitud.estado === "enviada_entidad" ? (
+        <section aria-labelledby="titulo-constitucion" className="flex flex-col gap-4">
+          <h2 id="titulo-constitucion" className="text-lg font-semibold">
+            Registrar constitución
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Confirma los datos finales que aparecen en el CDT constituido. Vienen prellenados con
+            los valores aprobados; si cambiaron, corrígelos aquí.
+          </p>
+          <FormularioConstitucion
+            valores={{
+              valor: solicitud.valor,
+              tasaEa: solicitud.tasaEa,
+              fechaApertura: solicitud.fechaApertura,
+              fechaVenc: solicitud.fechaVenc,
+            }}
+            registrar={registrarConstitucion.bind(null, id)}
+          />
+        </section>
+      ) : null}
 
       <section aria-labelledby="titulo-versiones" className="flex flex-col gap-2">
         <h2 id="titulo-versiones" className="text-lg font-semibold">

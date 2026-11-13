@@ -20,6 +20,7 @@ const PERMISO: Partial<Record<Accion, string>> = {
   devolver: "solicitud.devolver",
   cancelar: "solicitud.cancelar",
   enviar_entidad: "solicitud.enviar_entidad",
+  constituir: "solicitud.constituir",
   cargar_firma: "solicitud.cargar_firma",
   editar_post_aprobacion: "solicitud.editar",
   aceptar_firma: "solicitud.revisar_firma",
@@ -27,7 +28,9 @@ const PERMISO: Partial<Record<Accion, string>> = {
 };
 
 export type EntradaTransicion = { nota?: string | null; metadata?: Record<string, unknown> };
-export type Efecto = (tx: Tx, fila: FilaSolicitud) => Promise<void>;
+// El efecto corre dentro de la transacción. Si devuelve metadatos (p. ej. diferencias de una
+// constitución), se suman a la fila de auditoría `solicitud.<acción>`.
+export type Efecto = (tx: Tx, fila: FilaSolicitud) => Promise<Record<string, unknown> | undefined>;
 
 export async function ejecutarTransicion(
   actor: Actor,
@@ -67,18 +70,17 @@ export async function ejecutarTransicion(
         `La solicitud no puede pasar por «${accion}» desde su estado actual`,
       );
     }
-    if (efecto) {
-      await efecto(tx, fila);
-    }
+    const extra = efecto ? await efecto(tx, fila) : undefined;
     const resultado = await aplicarTransicion(tx, {
       solicitudId,
       accion,
       actorUserId: actor.userId,
       nota: entrada.nota ?? null,
     });
-    // Los metadatos de la entrada (p. ej. los diffs de una edición) van junto a desde y hacia.
+    // Los metadatos de la entrada y del efecto van junto a desde y hacia.
     evento.metadata = {
       ...(entrada.metadata ?? {}),
+      ...(extra ?? {}),
       desde: resultado.desde,
       hacia: resultado.hacia,
     };
